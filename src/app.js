@@ -1,4 +1,5 @@
 import express from 'express';
+import auxiliaresRoutes from './routes/auxiliares.routes.js';
 
 const app = express();
 
@@ -12,10 +13,13 @@ app.use((req, res, next) => {
     next();
 });
 
-// Ruta base de bienvenida y estado general
+// Rutas auxiliares bajo /api/v1
+app.use('/api/v1', auxiliaresRoutes);
+
+// Ruta base de bienvenida y resumen de la API
 app.get('/', (req, res) => {
     res.json({
-        message: 'Bienvenido a la API REST de eSports: Perfiles de Jugadores y Rosters',
+        mensaje: 'Bienvenido a la API REST de eSports: Perfiles de Jugadores y Rosters',
         version: '1.0.0',
         base_url: '/api/v1',
         endpoints: {
@@ -34,7 +38,7 @@ app.get('/', (req, res) => {
 // Manejo de ruta no encontrada (404)
 app.use((req, res) => {
     res.status(404).json({
-        mensaje: 'Ruta no encontrada'
+        mensaje: 'Recurso no encontrado'
     });
 });
 
