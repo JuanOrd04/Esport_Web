@@ -1,5 +1,6 @@
 import express from 'express';
 import auxiliaresRoutes from './routes/auxiliares.routes.js';
+import jugadoresRoutes from './routes/jugadores.routes.js';
 
 const app = express();
 
@@ -13,8 +14,9 @@ app.use((req, res, next) => {
     next();
 });
 
-// Rutas auxiliares bajo /api/v1
+// Rutas de la API bajo /api/v1
 app.use('/api/v1', auxiliaresRoutes);
+app.use('/api/v1/jugadores', jugadoresRoutes);
 
 // Ruta base de bienvenida y resumen de la API
 app.get('/', (req, res) => {
