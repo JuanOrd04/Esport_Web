@@ -1,0 +1,30 @@
+{
+  "name": "esport-web-api",
+  "version": "1.0.0",
+  "description": "API REST para gestion de jugadores y rosters de eSports con Express y Sequelize",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "express",
+    "sequelize",
+    "mysql",
+    "esports",
+    "rest-api"
+  ],
+  "author": "JuanOrd04",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql2": "^3.12.0",
+    "sequelize": "^6.37.5",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
