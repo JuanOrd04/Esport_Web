@@ -7,6 +7,8 @@ import swaggerUi from 'swagger-ui-express';
 import auxiliaresRoutes from './routes/auxiliares.routes.js';
 import jugadoresRoutes from './routes/jugadores.routes.js';
 import rostersRoutes from './routes/rosters.routes.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+import { AppError } from './utils/AppError.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,20 +34,12 @@ app.use((req, res, next) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/openapi.json', (req, res) => res.json(swaggerDocument));
 
-// Rutas de la API bajo /api/v1
-app.use('/api/v1', auxiliaresRoutes);
-app.use('/api/v1/jugadores', jugadoresRoutes);
-app.use('/api/v1/rosters', rostersRoutes);
-
-// Ruta base de bienvenida y resumen de la API
-app.get('/', (req, res) => {
+// Indice base de la API bajo /api/v1
+app.get('/api/v1', (req, res) => {
     res.json({
-        mensaje: 'Bienvenido a la API REST de eSports: Perfiles de Jugadores y Rosters',
+        mensaje: 'API REST eSports v1',
         version: '1.0.0',
-        documentacion: '/api-docs',
-        especificacion_openapi: '/openapi.json',
-        base_url: '/api/v1',
-        endpoints: {
+        recursos: {
             jugadores: '/api/v1/jugadores',
             rosters: '/api/v1/rosters',
             auxiliares: {
@@ -58,20 +52,28 @@ app.get('/', (req, res) => {
     });
 });
 
-// Manejo de ruta no encontrada (404)
-app.use((req, res) => {
-    res.status(404).json({
-        mensaje: 'Recurso no encontrado'
+// Rutas de la API bajo /api/v1
+app.use('/api/v1', auxiliaresRoutes);
+app.use('/api/v1/jugadores', jugadoresRoutes);
+app.use('/api/v1/rosters', rostersRoutes);
+
+// Ruta raiz general
+app.get('/', (req, res) => {
+    res.json({
+        mensaje: 'Bienvenido a la API REST de eSports: Perfiles de Jugadores y Rosters',
+        version: '1.0.0',
+        documentacion: '/api-docs',
+        especificacion_openapi: '/openapi.json',
+        base_url: '/api/v1'
     });
 });
 
-// Manejo centralizado de errores (500)
-app.use((err, req, res, next) => {
-    console.error('Error no controlado:', err);
-    res.status(500).json({
-        mensaje: 'Error interno del servidor',
-        error: err.message
-    });
+// Manejo de ruta no encontrada (404)
+app.use((req, res, next) => {
+    next(new AppError('Recurso no encontrado', 404));
 });
+
+// Middleware centralizado de manejo de errores
+app.use(errorHandler);
 
 export default app;

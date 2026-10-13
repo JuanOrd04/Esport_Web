@@ -34,7 +34,14 @@ const RosterJugador = sequelize.define('RosterJugador', {
     }
 }, {
     tableName: 'roster_jugador',
-    timestamps: false
+    timestamps: false,
+    indexes: [
+        {
+            unique: true,
+            fields: ['id_roster', 'id_jugador'],
+            name: 'unique_roster_jugador'
+        }
+    ]
 });
 
 export default RosterJugador;

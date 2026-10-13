@@ -8,16 +8,69 @@
   "servers": [
     {
       "url": "http://localhost:3000/api/v1",
-      "description": "Servidor Local de Desarrollo"
+      "description": "API Base v1"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor Raíz"
     }
   ],
   "tags": [
+    { "name": "General", "description": "Endpoints raíz y de descubrimiento de recursos" },
     { "name": "Jugadores", "description": "Operaciones CRUD y búsqueda de jugadores" },
     { "name": "Rosters", "description": "Gestión de equipos y temporadas" },
     { "name": "Asignaciones", "description": "Asignación de jugadores a rosters y control de roles" },
     { "name": "Auxiliares", "description": "Catálogos y estado del servicio" }
   ],
   "paths": {
+    "/": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Bienvenida y enlaces a la documentación",
+        "responses": {
+          "200": {
+            "description": "Información general y enlaces",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensaje": { "type": "string" },
+                    "version": { "type": "string" },
+                    "documentacion": { "type": "string" },
+                    "especificacion_openapi": { "type": "string" },
+                    "base_url": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1": {
+      "get": {
+        "tags": ["General"],
+        "summary": "Índice de recursos disponibles en v1",
+        "responses": {
+          "200": {
+            "description": "Mapa de recursos de la API",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensaje": { "type": "string" },
+                    "version": { "type": "string" },
+                    "recursos": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/jugadores": {
       "get": {
         "tags": ["Jugadores"],
@@ -39,6 +92,10 @@
                 }
               }
             }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           }
         }
       },
@@ -63,8 +120,28 @@
               }
             }
           },
-          "400": { "description": "Datos inválidos o faltantes" },
-          "409": { "description": "Nickname ya registrado (Conflicto)" }
+          "400": {
+            "description": "Datos inválidos o faltantes",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "El campo nickname es obligatorio y no puede estar vacío" }
+              }
+            }
+          },
+          "409": {
+            "description": "Nickname ya registrado (Conflicto RN-01)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "El nickname \"Faker\" ya está registrado" }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
         }
       }
     },
@@ -84,7 +161,15 @@
               }
             }
           },
-          "404": { "description": "Jugador no encontrado" }
+          "404": {
+            "description": "Jugador no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Jugador con ID 999 no encontrado" }
+              }
+            }
+          }
         }
       },
       "put": {
@@ -103,9 +188,33 @@
         },
         "responses": {
           "200": { "description": "Jugador actualizado" },
-          "400": { "description": "Datos inválidos" },
-          "404": { "description": "Jugador no encontrado" },
-          "409": { "description": "Nickname duplicado con otro jugador" }
+          "400": {
+            "description": "Datos inválidos (ej. nickname vacío o rol inválido)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "El nickname no puede estar vacío" }
+              }
+            }
+          },
+          "404": {
+            "description": "Jugador no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Jugador con ID 999 no encontrado" }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicto por nickname duplicado o conflicto de rol titular en rosters existentes (RN-03)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "No se puede cambiar el rol a \"Top\": generaría conflicto en el roster \"TL Principal\" donde ya existe un titular con ese rol (Impact)" }
+              }
+            }
+          }
         }
       },
       "delete": {
@@ -116,7 +225,15 @@
         ],
         "responses": {
           "204": { "description": "Jugador eliminado exitosamente" },
-          "404": { "description": "Jugador no encontrado" }
+          "404": {
+            "description": "Jugador no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Jugador con ID 999 no encontrado" }
+              }
+            }
+          }
         }
       }
     },
@@ -155,7 +272,15 @@
         },
         "responses": {
           "201": { "description": "Roster creado exitosamente" },
-          "400": { "description": "Datos inválidos" }
+          "400": {
+            "description": "Datos inválidos",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "El campo nombre es obligatorio" }
+              }
+            }
+          }
         }
       }
     },
@@ -175,7 +300,15 @@
               }
             }
           },
-          "404": { "description": "Roster no encontrado" }
+          "404": {
+            "description": "Roster no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Roster con ID 999 no encontrado" }
+              }
+            }
+          }
         }
       },
       "put": {
@@ -194,8 +327,24 @@
         },
         "responses": {
           "200": { "description": "Roster actualizado" },
-          "400": { "description": "Datos inválidos" },
-          "404": { "description": "Roster no encontrado" }
+          "400": {
+            "description": "Datos inválidos (ej. nombre vacío)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "El nombre del roster no puede estar vacío" }
+              }
+            }
+          },
+          "404": {
+            "description": "Roster no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Roster con ID 999 no encontrado" }
+              }
+            }
+          }
         }
       },
       "delete": {
@@ -206,7 +355,15 @@
         ],
         "responses": {
           "204": { "description": "Roster eliminado (los jugadores permanecen)" },
-          "404": { "description": "Roster no encontrado" }
+          "404": {
+            "description": "Roster no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Roster con ID 999 no encontrado" }
+              }
+            }
+          }
         }
       }
     },
@@ -219,7 +376,15 @@
         ],
         "responses": {
           "200": { "description": "Lista de jugadores asignados" },
-          "404": { "description": "Roster no encontrado" }
+          "404": {
+            "description": "Roster no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Roster con ID 999 no encontrado" }
+              }
+            }
+          }
         }
       },
       "post": {
@@ -238,9 +403,33 @@
         },
         "responses": {
           "201": { "description": "Jugador asignado correctamente" },
-          "400": { "description": "Rol de roster inválido o id_jugador faltante" },
-          "404": { "description": "Roster o Jugador no encontrado" },
-          "409": { "description": "Conflicto: Máximo 5 titulares, dos titulares con mismo rol o jugador ya asignado" }
+          "400": {
+            "description": "Rol de roster inválido o id_jugador faltante",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Rol en roster inválido. Debe ser uno de: Titular, Suplente" }
+              }
+            }
+          },
+          "404": {
+            "description": "Roster o Jugador no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Roster con ID 999 no encontrado" }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicto: Máximo 5 titulares, dos titulares con mismo rol o jugador ya asignado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "Conflicto de rol: ya existe un titular con el rol \"Mid\" (Faker)" }
+              }
+            }
+          }
         }
       }
     },
@@ -262,9 +451,28 @@
         },
         "responses": {
           "200": { "description": "Rol actualizado" },
-          "400": { "description": "Rol inválido" },
-          "404": { "description": "Roster o asignación no encontrada" },
-          "409": { "description": "Conflicto con reglas de titulares" }
+          "400": {
+            "description": "Rol inválido",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "Roster o asignación no encontrada",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "El jugador con ID 999 no pertenece a este roster" }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicto con reglas de titulares (RN-02 o RN-03)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "El roster ya cuenta con el máximo de 5 titulares" }
+              }
+            }
+          }
         }
       },
       "delete": {
@@ -276,7 +484,15 @@
         ],
         "responses": {
           "204": { "description": "Jugador removido del roster exitosamente" },
-          "404": { "description": "Roster o jugador no encontrado" }
+          "404": {
+            "description": "Roster o jugador no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "mensaje": "El jugador con ID 999 no pertenece al roster" }
+              }
+            }
+          }
         }
       }
     },
@@ -346,13 +562,25 @@
         "summary": "Verificar salud de la API y de la base de datos",
         "responses": {
           "200": { "description": "API y Base de datos funcionando correctamente" },
-          "500": { "description": "Error en la conexión a la base de datos" }
+          "500": {
+            "description": "Error en la conexión a la base de datos",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
         }
       }
     }
   },
   "components": {
     "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "mensaje": {
+            "type": "string",
+            "example": "Mensaje descriptivo del error"
+          }
+        }
+      },
       "Jugador": {
         "type": "object",
         "properties": {

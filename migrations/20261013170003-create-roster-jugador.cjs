@@ -32,6 +32,11 @@ module.exports = {
         type: Sequelize.ENUM('Titular', 'Suplente')
       }
     });
+
+    await queryInterface.addIndex('roster_jugador', ['id_roster', 'id_jugador'], {
+      unique: true,
+      name: 'unique_roster_jugador'
+    });
   },
 
   async down(queryInterface, Sequelize) {

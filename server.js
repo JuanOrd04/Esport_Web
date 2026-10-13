@@ -4,16 +4,12 @@ import { sequelize } from './src/models/index.js';
 
 const PORT = process.env.PORT || 3000;
 
-// Funcion para arrancar el servidor y sincronizar la BD
+// Funcion para arrancar el servidor HTTP
 const startServer = async () => {
     try {
-        // Verificar conexion
+        // Verificar conexion con MySQL (las tablas se gestionan mediante migraciones con 'npm run migrate')
         await sequelize.authenticate();
         console.log('✅ Conexión establecida con MySQL.');
-
-        // Sincronizar modelos (crea las tablas si no existen)
-        await sequelize.sync({ alter: true });
-        console.log('✅ Modelos sincronizados correctamente con la base de datos.');
 
         app.listen(PORT, () => {
             console.log(`🚀 Servidor eSports corriendo en http://localhost:${PORT}`);

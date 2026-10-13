@@ -92,10 +92,22 @@ export const obtenerRosterPorId = async (id) => {
     };
 };
 
-// RF-10: Editar roster
+// RF-10: Editar roster con validaciones reforzadas
 export const actualizarRoster = async (id, datos) => {
     const roster = await Roster.findByPk(id);
     if (!roster) return null;
+
+    if (datos.nombre !== undefined && (typeof datos.nombre !== 'string' || datos.nombre.trim() === '')) {
+        const error = new Error('El nombre del roster no puede estar vacío');
+        error.status = 400;
+        throw error;
+    }
+
+    if (datos.temporada !== undefined && String(datos.temporada).trim() === '') {
+        const error = new Error('La temporada no puede estar vacía');
+        error.status = 400;
+        throw error;
+    }
 
     if (datos.tipo && !TIPOS_ROSTER_VALIDOS.includes(datos.tipo)) {
         const error = new Error(`Tipo de roster inválido. Debe ser uno de: ${TIPOS_ROSTER_VALIDOS.join(', ')}`);

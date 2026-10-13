@@ -1,84 +1,77 @@
-### ==========================================
-### COLECCION DE PRUEBAS - REST CLIENT (VS CODE)
+### ====================================================================
+### COLECCION DE PRUEBAS COMPLETAS - REST CLIENT (VS CODE)
 ### API eSports: Perfiles de Jugadores y Rosters
-### ==========================================
+### Cubre Casos de Éxito, Validaciones 400/404 y Reglas de Negocio 409 (20/20)
+### ====================================================================
 
 @baseUrl = http://localhost:3000/api/v1
+@rootUrl = http://localhost:3000
 
-### ------------------------------------------
-### 1. ENDPOINTS AUXILIARES
-### ------------------------------------------
+### ====================================================================
+### 1. ENDPOINTS GENERALES Y AUXILIARES
+### ====================================================================
 
-### Verificar salud del API y BD
+### 1.1 Raíz general y bienvenida
+GET {{rootUrl}}/
+
+### 1.2 Índice base de recursos de la API (/api/v1)
+GET {{baseUrl}}/
+
+### 1.3 Verificar salud de la API y de la Base de Datos
 GET {{baseUrl}}/health
 
-### Listar roles permitidos
+### 1.4 Listar roles permitidos
 GET {{baseUrl}}/roles
 
-### Listar estados permitidos
+### 1.5 Listar estados permitidos
 GET {{baseUrl}}/estados
 
-### Listar tipos de roster permitidos
+### 1.6 Listar tipos de roster permitidos
 GET {{baseUrl}}/tipos-roster
 
 
-### ------------------------------------------
-### 2. JUGADORES
-### ------------------------------------------
+### ====================================================================
+### 2. MODULO: JUGADORES (CRUD, FILTROS Y CASOS DE ERROR)
+### ====================================================================
 
-### Listar todos los jugadores
+### 2.1 Listar todos los jugadores
 GET {{baseUrl}}/jugadores
 
-### Listar jugadores con filtros (rol, estado, search)
-GET {{baseUrl}}/jugadores?rol=Mid&estado=activo&search=faker
+### 2.2 Listar jugadores con filtros combinados (rol, estado y búsqueda)
+GET {{baseUrl}}/jugadores?rol=Mid&estado=activo&search=Faker
 
-### Ver detalle de un jugador por ID
+### 2.3 Ver detalle de un jugador existente
 GET {{baseUrl}}/jugadores/1
 
-### Crear un nuevo jugador (Faker)
+### 2.4 Error 404: Jugador inexistente
+GET {{baseUrl}}/jugadores/9999
+
+### 2.5 Crear Jugador 1 - Top
 POST {{baseUrl}}/jugadores
 Content-Type: application/json
 
 {
-  "nickname": "Faker",
-  "nombre_real": "Lee Sang-hyeok",
-  "pais": "Corea del Sur",
-  "rol": "Mid",
-  "estado": "activo"
-}
-
-### Crear otro jugador (Impact)
-POST {{baseUrl}}/jugadores
-Content-Type: application/json
-
-{
-  "nickname": "Impact",
-  "nombre_real": "Jeong Eon-young",
+  "nickname": "Zeus",
+  "nombre_real": "Choi Woo-je",
   "pais": "Corea del Sur",
   "rol": "Top",
   "estado": "activo"
 }
 
-### Prueba de error: Nickname duplicado (espera 409 Conflict)
+### 2.6 Crear Jugador 2 - Jungle
 POST {{baseUrl}}/jugadores
 Content-Type: application/json
 
 {
-  "nickname": "Faker",
-  "rol": "Mid"
+  "nickname": "Oner",
+  "nombre_real": "Mun Hyeon-jun",
+  "pais": "Corea del Sur",
+  "rol": "Jungle",
+  "estado": "activo"
 }
 
-### Prueba de error: Rol invalido (espera 400 Bad Request)
+### 2.7 Crear Jugador 3 - Mid (Faker)
 POST {{baseUrl}}/jugadores
-Content-Type: application/json
-
-{
-  "nickname": "Caps",
-  "rol": "Portero"
-}
-
-### Actualizar jugador por ID
-PUT {{baseUrl}}/jugadores/1
 Content-Type: application/json
 
 {
@@ -89,56 +82,180 @@ Content-Type: application/json
   "estado": "activo"
 }
 
-### Eliminar jugador por ID
-DELETE {{baseUrl}}/jugadores/999
+### 2.8 Crear Jugador 4 - ADC
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Gumayusi",
+  "nombre_real": "Lee Min-hyeong",
+  "pais": "Corea del Sur",
+  "rol": "ADC",
+  "estado": "activo"
+}
+
+### 2.9 Crear Jugador 5 - Support
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Keria",
+  "nombre_real": "Ryu Min-seok",
+  "pais": "Corea del Sur",
+  "rol": "Support",
+  "estado": "activo"
+}
+
+### 2.10 Crear Jugador 6 - Suplente (Mid)
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Poby",
+  "nombre_real": "Yoon Seong-won",
+  "pais": "Corea del Sur",
+  "rol": "Mid",
+  "estado": "activo"
+}
+
+### 2.11 Error 409 (RN-01): Intento de crear jugador con nickname duplicado
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Faker",
+  "nombre_real": "Duplicado",
+  "rol": "Mid"
+}
+
+### 2.12 Error 400: Nickname vacío o ausente
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "   ",
+  "rol": "Mid"
+}
+
+### 2.13 Error 400: Rol inválido no permitido por el catálogo
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Messi",
+  "rol": "Delantero"
+}
+
+### 2.14 Actualizar jugador con éxito
+PUT {{baseUrl}}/jugadores/1
+Content-Type: application/json
+
+{
+  "nickname": "Zeus_Updated",
+  "nombre_real": "Choi Woo-je",
+  "pais": "Corea del Sur",
+  "rol": "Top",
+  "estado": "activo"
+}
+
+### 2.15 Error 400: Actualizar jugador con nickname vacío
+PUT {{baseUrl}}/jugadores/1
+Content-Type: application/json
+
+{
+  "nickname": ""
+}
+
+### 2.16 Error 404: Actualizar jugador inexistente
+PUT {{baseUrl}}/jugadores/9999
+Content-Type: application/json
+
+{
+  "nickname": "NoExiste"
+}
+
+### 2.17 Error 404: Eliminar jugador inexistente
+DELETE {{baseUrl}}/jugadores/9999
 
 
-### ------------------------------------------
-### 3. ROSTERS
-### ------------------------------------------
+### ====================================================================
+### 3. MODULO: ROSTERS (CRUD Y CASOS DE ERROR)
+### ====================================================================
 
-### Listar todos los rosters (incluye cantidad_jugadores)
+### 3.1 Listar todos los rosters (devuelve cantidad_jugadores)
 GET {{baseUrl}}/rosters
 
-### Listar rosters filtrando por tipo y temporada
-GET {{baseUrl}}/rosters?tipo=Principal&temporada=2025
+### 3.2 Listar rosters con filtros (tipo y temporada)
+GET {{baseUrl}}/rosters?tipo=Principal&temporada=2026
 
-### Crear un nuevo roster
+### 3.3 Crear nuevo roster principal
 POST {{baseUrl}}/rosters
 Content-Type: application/json
 
 {
-  "nombre": "TL Principal",
+  "nombre": "T1 Principal",
   "juego": "League of Legends",
-  "tipo": "Principal",
-  "temporada": "2025"
-}
-
-### Ver detalle de un roster con sus jugadores
-GET {{baseUrl}}/rosters/1
-
-### Actualizar roster por ID
-PUT {{baseUrl}}/rosters/1
-Content-Type: application/json
-
-{
-  "nombre": "TL Principal Actualizado",
   "tipo": "Principal",
   "temporada": "2026"
 }
 
-### Eliminar un roster por ID
-DELETE {{baseUrl}}/rosters/999
+### 3.4 Error 400: Crear roster con nombre vacío
+POST {{baseUrl}}/rosters
+Content-Type: application/json
+
+{
+  "nombre": "   ",
+  "temporada": "2026"
+}
+
+### 3.5 Error 400: Crear roster con tipo inválido
+POST {{baseUrl}}/rosters
+Content-Type: application/json
+
+{
+  "nombre": "T1 Invalido",
+  "tipo": "Juvenil",
+  "temporada": "2026"
+}
+
+### 3.6 Ver detalle del roster (incluye lista de jugadores y roles)
+GET {{baseUrl}}/rosters/1
+
+### 3.7 Error 404: Ver detalle de roster inexistente
+GET {{baseUrl}}/rosters/9999
+
+### 3.8 Actualizar roster existente
+PUT {{baseUrl}}/rosters/1
+Content-Type: application/json
+
+{
+  "nombre": "T1 Champions 2026",
+  "tipo": "Principal",
+  "temporada": "2026"
+}
+
+### 3.9 Error 400: Actualizar roster con nombre vacío
+PUT {{baseUrl}}/rosters/1
+Content-Type: application/json
+
+{
+  "nombre": ""
+}
+
+### 3.10 Error 404: Actualizar roster inexistente
+PUT {{baseUrl}}/rosters/9999
+Content-Type: application/json
+
+{
+  "nombre": "Fantasma"
+}
 
 
-### ------------------------------------------
-### 4. ASIGNACIONES DE JUGADORES A ROSTERS
-### ------------------------------------------
+### ====================================================================
+### 4. ASIGNACIONES Y REGLAS DE NEGOCIO (RN-02, RN-03, RN-04, RN-05)
+### ====================================================================
 
-### Listar jugadores asignados a un roster
-GET {{baseUrl}}/rosters/1/jugadores
-
-### Asignar jugador al roster como Titular
+### 4.1 Asignar Titular 1: Zeus (Top) al Roster 1
 POST {{baseUrl}}/rosters/1/jugadores
 Content-Type: application/json
 
@@ -147,22 +264,117 @@ Content-Type: application/json
   "rol_en_roster": "Titular"
 }
 
-### Asignar jugador como Suplente
+### 4.2 Asignar Titular 2: Oner (Jungle) al Roster 1
 POST {{baseUrl}}/rosters/1/jugadores
 Content-Type: application/json
 
 {
   "id_jugador": 2,
+  "rol_en_roster": "Titular"
+}
+
+### 4.3 Asignar Titular 3: Faker (Mid) al Roster 1
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 3,
+  "rol_en_roster": "Titular"
+}
+
+### 4.4 Asignar Titular 4: Gumayusi (ADC) al Roster 1
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 4,
+  "rol_en_roster": "Titular"
+}
+
+### 4.5 Asignar Titular 5: Keria (Support) al Roster 1 (Completa los 5 titulares)
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 5,
+  "rol_en_roster": "Titular"
+}
+
+### 4.6 Error 409 (RN-03): Asignar Poby (Mid) como Titular cuando Faker ya es Titular Mid
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 6,
+  "rol_en_roster": "Titular"
+}
+
+### 4.7 Asignar Poby (Mid) como Suplente con éxito
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 6,
   "rol_en_roster": "Suplente"
 }
 
-### Cambiar rol dentro del roster (Titular/Suplente)
-PUT {{baseUrl}}/rosters/1/jugadores/2
+### 4.8 Error 409 (RN-02): Intentar promover a Poby a Titular (el roster ya tiene 5 titulares)
+PUT {{baseUrl}}/rosters/1/jugadores/6
 Content-Type: application/json
 
 {
   "rol_en_roster": "Titular"
 }
 
-### Quitar un jugador del roster
-DELETE {{baseUrl}}/rosters/1/jugadores/2
+### 4.9 Error 409: Asignar un jugador que ya está asignado al mismo roster
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 1,
+  "rol_en_roster": "Suplente"
+}
+
+### 4.10 Error 404: Asignar jugador a un roster inexistente
+POST {{baseUrl}}/rosters/9999/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 1,
+  "rol_en_roster": "Titular"
+}
+
+### 4.11 Error 404: Asignar jugador inexistente a un roster
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 9999,
+  "rol_en_roster": "Titular"
+}
+
+### 4.12 Error 400: Rol en roster inválido (distinto de Titular o Suplente)
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 1,
+  "rol_en_roster": "Entrenador"
+}
+
+### 4.13 Error 409 (RN-03 Avanzada): Actualizar rol global de Faker a 'Top' cuando Zeus ya es Top Titular en su roster
+PUT {{baseUrl}}/jugadores/3
+Content-Type: application/json
+
+{
+  "rol": "Top"
+}
+
+### 4.14 Listar jugadores de un roster
+GET {{baseUrl}}/rosters/1/jugadores
+
+### 4.15 Quitar a Poby del roster
+DELETE {{baseUrl}}/rosters/1/jugadores/6
+
+### 4.16 Error 404: Quitar jugador que no pertenece al roster
+DELETE {{baseUrl}}/rosters/1/jugadores/9999
