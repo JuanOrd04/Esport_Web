@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "backenduser",
+    "password": "superpassword",
+    "database": "esports_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "backenduser",
+    "password": "superpassword",
+    "database": "esports_db_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "backenduser",
+    "password": "superpassword",
+    "database": "esports_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}

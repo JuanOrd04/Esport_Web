@@ -41,7 +41,12 @@ npm install
    DB_PASSWORD=superpassword
    ```
 
-*Nota: Al arrancar el servidor, Sequelize se encarga automáticamente de crear y sincronizar las tablas (`jugadores`, `rosters`, `roster_jugador`) con sus llaves primarias, llaves foráneas y restricciones.*
+4. Ejecutar las migraciones de Sequelize:
+   ```bash
+   npm run migrate
+   ```
+
+*Nota: Las tablas también se sincronizan de forma segura al arrancar el servidor.*
 
 ### 3. Ejecutar el Servidor
 
@@ -122,8 +127,14 @@ Puedes consultar la documentación interactiva y probar todos los endpoints desd
 Organizamos el código en una arquitectura por capas clara y fácil de entender:
 
 ```text
+config/                  # Credenciales de Sequelize CLI
+└── config.json
+migrations/              # Migraciones de Sequelize CLI
+├── 20261013170001-create-jugadores.cjs
+├── 20261013170002-create-rosters.cjs
+└── 20261013170003-create-roster-jugador.cjs
 src/
-├── config/              # Conexión y configuración de Sequelize con MySQL
+├── config/              # Conexión Sequelize con variables de entorno
 │   └── database.js
 ├── models/              # Modelos de datos y relaciones (N:M y 1:N)
 │   ├── jugador.model.js
