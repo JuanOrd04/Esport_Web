@@ -1,10 +1,10 @@
 # Práctica: REST API - Perfiles de Jugadores y Rosters (eSports)
 
-Esta es una práctica escolar para la materia de Desarrollo de Aplicaciones Web. Desarrollamos una API RESTful para la gestión de jugadores y armado de rosters en equipos de eSports, utilizando Node.js, Express, Sequelize ORM y MySQL.
+Esta es una práctica para la materia de Desarrollo de Aplicaciones Web. Desarrollamos una API RESTful para la gestión de jugadores y armado de rosters en equipos de eSports, utilizando Node.js, Express, Sequelize ORM y MySQL.
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 - **Backend:** Node.js (con módulos ES6) y Express
 - **ORM / Modelos:** Sequelize
@@ -14,7 +14,7 @@ Esta es una práctica escolar para la materia de Desarrollo de Aplicaciones Web.
 
 ---
 
-## 🚀 Instrucciones de Instalación y Uso
+## Instrucciones de Instalación y Uso
 
 ### 1. Clonar el repositorio e instalar dependencias
 
@@ -26,7 +26,7 @@ npm install
 
 ### 2. Configurar la Base de Datos
 
-1. Asegúrate de tener tu servidor de MySQL corriendo en tu equipo.
+1. Tener tu servidor de MySQL corriendo en tu equipo.
 2. Crea la base de datos ejecutando en MySQL (Workbench o consola):
    ```sql
    CREATE DATABASE IF NOT EXISTS esports_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -41,12 +41,7 @@ npm install
    DB_PASSWORD=superpassword
    ```
 
-4. Ejecutar las migraciones de Sequelize:
-   ```bash
-   npm run migrate
-   ```
-
-*Nota: Las tablas también se sincronizan de forma segura al arrancar el servidor.*
+*Nota: Al arrancar el servidor, Sequelize se encarga automáticamente de crear y sincronizar las tablas (`jugadores`, `rosters`, `roster_jugador`) con sus llaves primarias, llaves foráneas y restricciones.*
 
 ### 3. Ejecutar el Servidor
 
@@ -64,7 +59,7 @@ El servidor estará escuchando en: `http://localhost:3000`.
 
 ---
 
-## 📚 Documentación Interactiva OpenAPI (Swagger)
+## Documentación Interactiva OpenAPI (Swagger)
 
 Puedes consultar la documentación interactiva y probar todos los endpoints desde tu navegador en:
 - **Swagger UI:** `http://localhost:3000/api-docs`
@@ -74,7 +69,7 @@ Puedes consultar la documentación interactiva y probar todos los endpoints desd
 
 ---
 
-## 📋 Lista de Endpoints Disponibles (`/api/v1`)
+## Lista de Endpoints Disponibles (`/api/v1`)
 
 ### 1. Módulo: Jugadores
 | Método | Endpoint | Descripción | Códigos |
@@ -112,7 +107,7 @@ Puedes consultar la documentación interactiva y probar todos los endpoints desd
 
 ---
 
-## ⚖️ Reglas de Negocio Implementadas
+## Reglas de Negocio Implementadas
 
 - **RN-01:** El nickname de un jugador es único en el sistema. Si se intenta registrar o actualizar con un nickname existente, devuelve `409 Conflict`.
 - **RN-02:** Un roster puede tener como máximo **5 titulares**. Intentar asignar o cambiar a un 6to titular devuelve `409 Conflict`.
@@ -122,7 +117,7 @@ Puedes consultar la documentación interactiva y probar todos los endpoints desd
 
 ---
 
-## 🏛️ Estructura del Proyecto
+## Estructura del Proyecto
 
 Organizamos el código en una arquitectura por capas clara y fácil de entender:
 
