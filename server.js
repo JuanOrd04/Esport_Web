@@ -17,7 +17,9 @@ const startServer = async () => {
 
         app.listen(PORT, () => {
             console.log(`🚀 Servidor eSports corriendo en http://localhost:${PORT}`);
-            console.log(`📡 Endpoints disponibles en http://localhost:${PORT}/api/v1`);
+            console.log(`📚 Documentación interactiva (Swagger UI): http://localhost:${PORT}/api-docs`);
+            console.log(`📄 Especificación OpenAPI (JSON):         http://localhost:${PORT}/openapi.json`);
+            console.log(`📡 Endpoints base disponibles en:          http://localhost:${PORT}/api/v1`);
         });
     } catch (error) {
         console.error('❌ Error fatal al conectar con la base de datos:', error.message);

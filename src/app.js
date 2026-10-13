@@ -1,7 +1,20 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import swaggerUi from 'swagger-ui-express';
+
 import auxiliaresRoutes from './routes/auxiliares.routes.js';
 import jugadoresRoutes from './routes/jugadores.routes.js';
 import rostersRoutes from './routes/rosters.routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Cargar la especificacion de OpenAPI
+const swaggerDocument = JSON.parse(
+    fs.readFileSync(path.join(__dirname, 'docs', 'openapi.json'), 'utf8')
+);
 
 const app = express();
 
@@ -15,6 +28,10 @@ app.use((req, res, next) => {
     next();
 });
 
+// Documentacion interactiva Swagger / OpenAPI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/openapi.json', (req, res) => res.json(swaggerDocument));
+
 // Rutas de la API bajo /api/v1
 app.use('/api/v1', auxiliaresRoutes);
 app.use('/api/v1/jugadores', jugadoresRoutes);
@@ -25,6 +42,8 @@ app.get('/', (req, res) => {
     res.json({
         mensaje: 'Bienvenido a la API REST de eSports: Perfiles de Jugadores y Rosters',
         version: '1.0.0',
+        documentacion: '/api-docs',
+        especificacion_openapi: '/openapi.json',
         base_url: '/api/v1',
         endpoints: {
             jugadores: '/api/v1/jugadores',

@@ -1,0 +1,168 @@
+### ==========================================
+### COLECCION DE PRUEBAS - REST CLIENT (VS CODE)
+### API eSports: Perfiles de Jugadores y Rosters
+### ==========================================
+
+@baseUrl = http://localhost:3000/api/v1
+
+### ------------------------------------------
+### 1. ENDPOINTS AUXILIARES
+### ------------------------------------------
+
+### Verificar salud del API y BD
+GET {{baseUrl}}/health
+
+### Listar roles permitidos
+GET {{baseUrl}}/roles
+
+### Listar estados permitidos
+GET {{baseUrl}}/estados
+
+### Listar tipos de roster permitidos
+GET {{baseUrl}}/tipos-roster
+
+
+### ------------------------------------------
+### 2. JUGADORES
+### ------------------------------------------
+
+### Listar todos los jugadores
+GET {{baseUrl}}/jugadores
+
+### Listar jugadores con filtros (rol, estado, search)
+GET {{baseUrl}}/jugadores?rol=Mid&estado=activo&search=faker
+
+### Ver detalle de un jugador por ID
+GET {{baseUrl}}/jugadores/1
+
+### Crear un nuevo jugador (Faker)
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Faker",
+  "nombre_real": "Lee Sang-hyeok",
+  "pais": "Corea del Sur",
+  "rol": "Mid",
+  "estado": "activo"
+}
+
+### Crear otro jugador (Impact)
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Impact",
+  "nombre_real": "Jeong Eon-young",
+  "pais": "Corea del Sur",
+  "rol": "Top",
+  "estado": "activo"
+}
+
+### Prueba de error: Nickname duplicado (espera 409 Conflict)
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Faker",
+  "rol": "Mid"
+}
+
+### Prueba de error: Rol invalido (espera 400 Bad Request)
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Caps",
+  "rol": "Portero"
+}
+
+### Actualizar jugador por ID
+PUT {{baseUrl}}/jugadores/1
+Content-Type: application/json
+
+{
+  "nickname": "Faker",
+  "nombre_real": "Lee Sang-hyeok",
+  "pais": "Corea del Sur",
+  "rol": "Mid",
+  "estado": "activo"
+}
+
+### Eliminar jugador por ID
+DELETE {{baseUrl}}/jugadores/999
+
+
+### ------------------------------------------
+### 3. ROSTERS
+### ------------------------------------------
+
+### Listar todos los rosters (incluye cantidad_jugadores)
+GET {{baseUrl}}/rosters
+
+### Listar rosters filtrando por tipo y temporada
+GET {{baseUrl}}/rosters?tipo=Principal&temporada=2025
+
+### Crear un nuevo roster
+POST {{baseUrl}}/rosters
+Content-Type: application/json
+
+{
+  "nombre": "TL Principal",
+  "juego": "League of Legends",
+  "tipo": "Principal",
+  "temporada": "2025"
+}
+
+### Ver detalle de un roster con sus jugadores
+GET {{baseUrl}}/rosters/1
+
+### Actualizar roster por ID
+PUT {{baseUrl}}/rosters/1
+Content-Type: application/json
+
+{
+  "nombre": "TL Principal Actualizado",
+  "tipo": "Principal",
+  "temporada": "2026"
+}
+
+### Eliminar un roster por ID
+DELETE {{baseUrl}}/rosters/999
+
+
+### ------------------------------------------
+### 4. ASIGNACIONES DE JUGADORES A ROSTERS
+### ------------------------------------------
+
+### Listar jugadores asignados a un roster
+GET {{baseUrl}}/rosters/1/jugadores
+
+### Asignar jugador al roster como Titular
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 1,
+  "rol_en_roster": "Titular"
+}
+
+### Asignar jugador como Suplente
+POST {{baseUrl}}/rosters/1/jugadores
+Content-Type: application/json
+
+{
+  "id_jugador": 2,
+  "rol_en_roster": "Suplente"
+}
+
+### Cambiar rol dentro del roster (Titular/Suplente)
+PUT {{baseUrl}}/rosters/1/jugadores/2
+Content-Type: application/json
+
+{
+  "rol_en_roster": "Titular"
+}
+
+### Quitar un jugador del roster
+DELETE {{baseUrl}}/rosters/1/jugadores/2
