@@ -1,6 +1,7 @@
 import express from 'express';
 import auxiliaresRoutes from './routes/auxiliares.routes.js';
 import jugadoresRoutes from './routes/jugadores.routes.js';
+import rostersRoutes from './routes/rosters.routes.js';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use((req, res, next) => {
 // Rutas de la API bajo /api/v1
 app.use('/api/v1', auxiliaresRoutes);
 app.use('/api/v1/jugadores', jugadoresRoutes);
+app.use('/api/v1/rosters', rostersRoutes);
 
 // Ruta base de bienvenida y resumen de la API
 app.get('/', (req, res) => {
