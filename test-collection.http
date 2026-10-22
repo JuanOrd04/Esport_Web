@@ -31,7 +31,76 @@ GET {{baseUrl}}/tipos-roster
 
 
 ### ====================================================================
-### 2. MODULO: JUGADORES (CRUD, FILTROS Y CASOS DE ERROR)
+### 2. AUTENTICACION CON JWT, COOKIES HTTP-ONLY Y PROTECCION CSRF
+### ====================================================================
+
+@apiKey = esports_api_key_secret_2026
+
+### 2.1 Login como Administrador (Emite cookie jwt_token HTTP-Only y csrf_token)
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+x-api-key: {{apiKey}}
+
+{
+  "email": "admin@esports.com",
+  "password": "admin123"
+}
+
+### Guardar variable de token CSRF recibida en la respuesta
+@csrfToken = {{loginAdmin.response.body.csrfToken}}
+
+### 2.2 Error 401: Intento de login sin API-Key
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@esports.com",
+  "password": "admin123"
+}
+
+### 2.3 Error 401: Intento de login con credenciales erróneas
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+x-api-key: {{apiKey}}
+
+{
+  "email": "hacker@malicioso.com",
+  "password": "wrong"
+}
+
+### 2.4 Verificar estado de autenticación (requiere cookie de sesión)
+GET {{baseUrl}}/auth/verify
+x-api-key: {{apiKey}}
+x-csrf-token: {{csrfToken}}
+
+### 2.5 Error 401: Intentar crear jugador sin estar autenticado (sin cookie)
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+
+{
+  "nickname": "Intruso",
+  "rol": "Mid"
+}
+
+### 2.6 Error 403: Intentar crear jugador sin header x-csrf-token (Ataque CSRF mitigado)
+POST {{baseUrl}}/jugadores
+Content-Type: application/json
+x-api-key: {{apiKey}}
+
+{
+  "nickname": "VictimaCSRF",
+  "rol": "Mid"
+}
+
+### 2.7 Logout: Cierre de sesión y limpieza de cookies
+POST {{baseUrl}}/auth/logout
+x-api-key: {{apiKey}}
+x-csrf-token: {{csrfToken}}
+
+
+### ====================================================================
+### 3. MODULO: JUGADORES (CRUD, FILTROS Y CASOS DE ERROR)
 ### ====================================================================
 
 ### 2.1 Listar todos los jugadores

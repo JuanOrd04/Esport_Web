@@ -17,6 +17,7 @@
   ],
   "tags": [
     { "name": "General", "description": "Endpoints raíz y de descubrimiento de recursos" },
+    { "name": "Autenticación", "description": "Inicio de sesión, cierre y verificación de tokens JWT y CSRF" },
     { "name": "Jugadores", "description": "Operaciones CRUD y búsqueda de jugadores" },
     { "name": "Rosters", "description": "Gestión de equipos y temporadas" },
     { "name": "Asignaciones", "description": "Asignación de jugadores a rosters y control de roles" },
@@ -68,6 +69,55 @@
               }
             }
           }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Iniciar sesión como Administrador (JWT en Cookie + CSRF)",
+        "description": "Autentica las credenciales y devuelve una cookie HTTP-Only con el JWT y el token CSRF para peticiones protegidas.",
+        "parameters": [
+          { "name": "x-api-key", "in": "header", "required": true, "schema": { "type": "string" }, "example": "esports_api_key_secret_2026" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "example": "admin@esports.com" },
+                  "password": { "type": "string", "example": "admin123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Login exitoso (recibe cookie jwt_token y csrf_token)" },
+          "400": { "description": "Email requerido" },
+          "401": { "description": "Credenciales inválidas o API Key no válida" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Autenticación"],
+        "summary": "Cerrar sesión y limpiar cookies",
+        "responses": {
+          "200": { "description": "Sesión finalizada exitosamente" }
+        }
+      }
+    },
+    "/auth/verify": {
+      "get": {
+        "tags": ["Autenticación"],
+        "summary": "Verificar estado de autenticación y rol actual",
+        "responses": {
+          "200": { "description": "Usuario autenticado" },
+          "401": { "description": "No autenticado o token expirado" }
         }
       }
     },
