@@ -10,8 +10,10 @@ import auxiliaresRoutes from './routes/auxiliares.routes.js';
 import jugadoresRoutes from './routes/jugadores.routes.js';
 import rostersRoutes from './routes/rosters.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import { googleLogin, googleCallback, logout } from './controllers/auth.controller.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { AppError } from './utils/AppError.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,6 +68,17 @@ app.get('/admin', (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/openapi.json', (req, res) => res.json(swaggerDocument));
 
+// ========================================================
+// Rutas de autenticación directa con Google OAuth 2.0
+// (Requisito 1.1: /auth/google/login y /auth/google/callback)
+// ========================================================
+app.get('/auth/google/login', googleLogin);
+app.get('/auth/google/callback', googleCallback);
+app.get('/api/auth/login', googleLogin);
+app.get('/api/auth/google/callback', googleCallback);
+app.post('/auth/logout', logout);
+app.get('/auth/logout', logout);
+
 // Indice base de la API bajo /api/v1
 app.get('/api/v1', (req, res) => {
     res.json({
@@ -73,9 +86,12 @@ app.get('/api/v1', (req, res) => {
         version: '1.0.0',
         recursos: {
             auth: {
+                google_login: 'GET /auth/google/login',
+                google_callback: 'GET /auth/google/callback',
                 login: 'POST /api/v1/auth/login',
                 logout: 'POST /api/v1/auth/logout',
-                verify: 'GET /api/v1/auth/verify'
+                verify: 'GET /api/v1/auth/verify',
+                usuarios: 'GET /api/v1/auth/usuarios'
             },
             jugadores: '/api/v1/jugadores',
             rosters: '/api/v1/rosters',
@@ -91,6 +107,7 @@ app.get('/api/v1', (req, res) => {
 
 // Rutas de la API bajo /api/v1
 app.use('/api/v1/auth', authRoutes);
+
 app.use('/api/v1', auxiliaresRoutes);
 app.use('/api/v1/jugadores', jugadoresRoutes);
 app.use('/api/v1/rosters', rostersRoutes);

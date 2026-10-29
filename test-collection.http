@@ -31,10 +31,27 @@ GET {{baseUrl}}/tipos-roster
 
 
 ### ====================================================================
-### 2. AUTENTICACION CON JWT, COOKIES HTTP-ONLY Y PROTECCION CSRF
+### 2. AUTENTICACION CON GOOGLE OAUTH 2.0 Y TABLA DE USUARIOS
+### ====================================================================
+
+### 2.0 Iniciar flujo Google OAuth - Obtener URL de consentimiento (Fase 1)
+GET {{rootUrl}}/auth/google/login
+Accept: application/json
+
+### 2.0.1 Simular Callback de Google con Usuario Autorizado (Fase 3)
+### (Verifica en tabla 'usuarios', emite JWT en cookie HTTP-Only y cookie CSRF, redirige a /?login=success)
+GET {{rootUrl}}/auth/google/callback?mock=true&mock_email=admin@esports.com
+
+### 2.0.2 Simular Callback de Google con Usuario NO Autorizado (Fase 3)
+### (Verifica en tabla 'usuarios', detecta no autorización y redirige a /?login=unauthorized)
+GET {{rootUrl}}/auth/google/callback?mock=true&mock_email=intruso@desconocido.com
+
+### ====================================================================
+### 2.1 AUTENTICACION TRADICIONAL Y GESTION DE USUARIOS
 ### ====================================================================
 
 @apiKey = esports_api_key_secret_2026
+
 
 ### 2.1 Login como Administrador (Emite cookie jwt_token HTTP-Only y csrf_token)
 # @name loginAdmin
