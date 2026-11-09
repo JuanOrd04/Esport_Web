@@ -42,6 +42,12 @@ export const api = {
             headers['x-csrf-token'] = currentCsrf;
         }
 
+        const config = {
+            ...options,
+            headers,
+            credentials: 'include' // Obligatorio para transmitir las cookies HTTP-Only (jwt_token)
+        };
+
         const url = endpoint.startsWith('http') || endpoint.startsWith('/auth') 
             ? endpoint 
             : `${API_BASE}${endpoint}`;
@@ -129,4 +135,3 @@ export const api = {
         return this.get('/auth/google/login');
     }
 };
-

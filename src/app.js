@@ -10,10 +10,10 @@ import auxiliaresRoutes from './routes/auxiliares.routes.js';
 import jugadoresRoutes from './routes/jugadores.routes.js';
 import rostersRoutes from './routes/rosters.routes.js';
 import authRoutes from './routes/auth.routes.js';
-import { googleLogin, googleCallback, logout } from './controllers/auth.controller.js';
+import { login, googleLogin, googleCallback, logout, verificarAuth } from './controllers/auth.controller.js';
+import { validarApiKey, verificarToken } from './middlewares/auth.middleware.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { AppError } from './utils/AppError.js';
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +35,8 @@ app.use(cookieParser());
 const allowedOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
     'http://localhost:5173',
     'http://127.0.0.1:5173'
 ];
@@ -48,8 +50,8 @@ app.use(cors({
         return callback(null, true); // Flexible para desarrollo
     },
     credentials: true, // Requerido para recibir y enviar cookies HTTP-Only
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-csrf-token'],
-    exposedHeaders: ['x-csrf-token']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-csrf-token', 'x-csrf'],
+    exposedHeaders: ['x-csrf-token', 'x-csrf']
 }));
 
 // Log simple de peticiones en consola
@@ -69,15 +71,16 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/openapi.json', (req, res) => res.json(swaggerDocument));
 
 // ========================================================
-// Rutas de autenticación directa con Google OAuth 2.0
-// (Requisito 1.1: /auth/google/login y /auth/google/callback)
+// Rutas de autenticación directa (Google OAuth y local)
 // ========================================================
 app.get('/auth/google/login', googleLogin);
 app.get('/auth/google/callback', googleCallback);
 app.get('/api/auth/login', googleLogin);
 app.get('/api/auth/google/callback', googleCallback);
+app.post('/auth/login', validarApiKey, login);
 app.post('/auth/logout', logout);
 app.get('/auth/logout', logout);
+app.get('/auth/verify', verificarToken, verificarAuth);
 
 // Indice base de la API bajo /api/v1
 app.get('/api/v1', (req, res) => {
@@ -107,7 +110,6 @@ app.get('/api/v1', (req, res) => {
 
 // Rutas de la API bajo /api/v1
 app.use('/api/v1/auth', authRoutes);
-
 app.use('/api/v1', auxiliaresRoutes);
 app.use('/api/v1/jugadores', jugadoresRoutes);
 app.use('/api/v1/rosters', rostersRoutes);
