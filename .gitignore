@@ -1,2 +1,7 @@
 node_modules/
 .env
+*.pem
+cert/
+
+test-results/
+playwright-report/

@@ -10,6 +10,8 @@ import auxiliaresRoutes from './routes/auxiliares.routes.js';
 import jugadoresRoutes from './routes/jugadores.routes.js';
 import rostersRoutes from './routes/rosters.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import { login, googleLogin, googleCallback, logout, verificarAuth } from './controllers/auth.controller.js';
+import { validarApiKey, verificarToken } from './middlewares/auth.middleware.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { AppError } from './utils/AppError.js';
 
@@ -33,6 +35,8 @@ app.use(cookieParser());
 const allowedOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
     'http://localhost:5173',
     'http://127.0.0.1:5173'
 ];
@@ -46,8 +50,8 @@ app.use(cors({
         return callback(null, true); // Flexible para desarrollo
     },
     credentials: true, // Requerido para recibir y enviar cookies HTTP-Only
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-csrf-token'],
-    exposedHeaders: ['x-csrf-token']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-csrf-token', 'x-csrf'],
+    exposedHeaders: ['x-csrf-token', 'x-csrf']
 }));
 
 // Log simple de peticiones en consola
@@ -66,6 +70,18 @@ app.get('/admin', (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/openapi.json', (req, res) => res.json(swaggerDocument));
 
+// ========================================================
+// Rutas de autenticación directa (Google OAuth y local)
+// ========================================================
+app.get('/auth/google/login', googleLogin);
+app.get('/auth/google/callback', googleCallback);
+app.get('/api/auth/login', googleLogin);
+app.get('/api/auth/google/callback', googleCallback);
+app.post('/auth/login', validarApiKey, login);
+app.post('/auth/logout', logout);
+app.get('/auth/logout', logout);
+app.get('/auth/verify', verificarToken, verificarAuth);
+
 // Indice base de la API bajo /api/v1
 app.get('/api/v1', (req, res) => {
     res.json({
@@ -73,9 +89,12 @@ app.get('/api/v1', (req, res) => {
         version: '1.0.0',
         recursos: {
             auth: {
+                google_login: 'GET /auth/google/login',
+                google_callback: 'GET /auth/google/callback',
                 login: 'POST /api/v1/auth/login',
                 logout: 'POST /api/v1/auth/logout',
-                verify: 'GET /api/v1/auth/verify'
+                verify: 'GET /api/v1/auth/verify',
+                usuarios: 'GET /api/v1/auth/usuarios'
             },
             jugadores: '/api/v1/jugadores',
             rosters: '/api/v1/rosters',

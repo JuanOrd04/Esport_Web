@@ -48,7 +48,11 @@ export const api = {
             credentials: 'include' // Obligatorio para transmitir las cookies HTTP-Only (jwt_token)
         };
 
-        const response = await fetch(`${API_BASE}${endpoint}`, config);
+        const url = endpoint.startsWith('http') || endpoint.startsWith('/auth') 
+            ? endpoint 
+            : `${API_BASE}${endpoint}`;
+
+        const response = await fetch(url, config);
 
         // Si el servidor nos responde con un nuevo header de CSRF, lo actualizamos
         const nuevoCsrf = response.headers.get('x-csrf-token');
@@ -125,5 +129,9 @@ export const api = {
         } catch (error) {
             return null;
         }
+    },
+
+    async getGoogleAuthUrl() {
+        return this.get('/auth/google/login');
     }
 };

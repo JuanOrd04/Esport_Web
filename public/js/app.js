@@ -34,9 +34,41 @@ function showToast(message, type = 'info') {
 // CONTROL DE AUTENTICACION Y SESION
 // ==========================================
 async function inicializarSesion() {
+    // 1. Detectar retorno de redirección de Google OAuth
+    const urlParams = new URLSearchParams(window.location.search);
+    const loginStatus = urlParams.get('login');
+
+    if (loginStatus === 'success') {
+        showToast('¡Autenticación con Google exitosa! Bienvenido al panel de administración.', 'success');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (loginStatus === 'unauthorized') {
+        const emailNoAuth = urlParams.get('email') || 'tu cuenta de Google';
+        showToast(`Acceso no autorizado: "${emailNoAuth}" no se encuentra registrado en la tabla de usuarios del backend.`, 'error');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (loginStatus === 'error') {
+        const motivo = urlParams.get('motivo') || 'Error general';
+        showToast(`Error en autenticación con Google: ${motivo}`, 'error');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     state.currentUser = await api.checkAuth();
     actualizarVistaSegunRol();
 }
+
+async function iniciarSesionGoogle() {
+    try {
+        showToast('Conectando con Google OAuth 2.0...', 'info');
+        const res = await api.getGoogleAuthUrl();
+        if (res && res.url) {
+            window.location.href = res.url;
+        } else {
+            window.location.href = '/auth/google/login';
+        }
+    } catch (error) {
+        showToast('Error al conectar con Google: ' + error.message, 'error');
+    }
+}
+
 
 function actualizarVistaSegunRol() {
     const roleBadge = document.getElementById('role-badge');
@@ -57,13 +89,19 @@ function actualizarVistaSegunRol() {
         statusSubtext.textContent = 'Tienes permisos completos para crear, editar y eliminar jugadores y gestionar rosters.';
         csrfIndicator.style.display = 'block';
 
+        const userAvatarHtml = state.currentUser.avatar 
+            ? `<img src="${escapeHtml(state.currentUser.avatar)}" alt="Avatar" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid #10b981;">` 
+            : '👤 ';
+        const displayName = state.currentUser.nombre || state.currentUser.email;
+
         authSection.innerHTML = `
-            <div class="user-badge">
-                <span>👤 ${state.currentUser.email}</span>
+            <div class="user-badge" style="display:flex;align-items:center;gap:0.5rem;">
+                <span title="${escapeHtml(state.currentUser.email)}">${userAvatarHtml}<strong>${escapeHtml(displayName)}</strong></span>
                 <button class="btn btn-secondary btn-sm" id="btn-logout">Cerrar Sesión</button>
             </div>
         `;
         document.getElementById('btn-logout').addEventListener('click', cerrarSesion);
+
 
         btnNuevoJugador.style.display = 'inline-flex';
         btnNuevoRoster.style.display = 'inline-flex';
@@ -714,7 +752,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form-roster').addEventListener('submit', guardarRoster);
     document.getElementById('btn-confirmar-asignacion').addEventListener('click', asignarJugadorAlRoster);
 
-    // 8. Formulario de Login
+    // 8. Formulario de Login y Botón Google
+    document.getElementById('btn-login-google')?.addEventListener('click', iniciarSesionGoogle);
+
     document.getElementById('form-login').addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
@@ -731,6 +771,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
 
 function debounce(func, wait) {
     let timeout;

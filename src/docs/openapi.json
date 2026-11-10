@@ -72,8 +72,34 @@
         }
       }
     },
+    "/auth/google/login": {
+      "get": {
+        "tags": ["Autenticación"],
+        "summary": "Iniciar sesión con Google OAuth 2.0 (Fase 1)",
+        "description": "Genera la URL de autorización de Google para iniciar el flujo OAuth 2.0 con scopes de email y perfil.",
+        "responses": {
+          "200": { "description": "URL de autorización generada ({ url: string })" },
+          "302": { "description": "Redirección directa a la pantalla de consentimiento de Google" }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "tags": ["Autenticación"],
+        "summary": "Callback de Google OAuth 2.0 (Fase 3)",
+        "description": "Procesa el código de autorización de Google, verifica el usuario en la tabla 'usuarios' de MySQL, emite la sesión JWT con cookies HTTP-Only y CSRF, y redirige al frontend.",
+        "parameters": [
+          { "name": "code", "in": "query", "description": "Código de autorización provisto por Google OAuth", "schema": { "type": "string" } },
+          { "name": "state", "in": "query", "description": "Token de estado CSRF", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "302": { "description": "Redirección a /?login=success (autorizado) o /?login=unauthorized (no registrado)" }
+        }
+      }
+    },
     "/auth/login": {
       "post": {
+
         "tags": ["Autenticación"],
         "summary": "Iniciar sesión como Administrador (JWT en Cookie + CSRF)",
         "description": "Autentica las credenciales y devuelve una cookie HTTP-Only con el JWT y el token CSRF para peticiones protegidas.",
