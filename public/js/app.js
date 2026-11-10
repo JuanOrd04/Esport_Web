@@ -55,18 +55,9 @@ async function inicializarSesion() {
     actualizarVistaSegunRol();
 }
 
-async function iniciarSesionGoogle() {
-    try {
-        showToast('Conectando con Google OAuth 2.0...', 'info');
-        const res = await api.getGoogleAuthUrl();
-        if (res && res.url) {
-            window.location.href = res.url;
-        } else {
-            window.location.href = '/auth/google/login';
-        }
-    } catch (error) {
-        showToast('Error al conectar con Google: ' + error.message, 'error');
-    }
+function iniciarSesionGoogle() {
+    showToast('Redirigiendo a Google OAuth 2.0...', 'info');
+    window.location.href = '/auth/google/login';
 }
 
 
