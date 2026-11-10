@@ -1,11 +1,11 @@
 # Práctica: REST API - Perfiles de Jugadores y Rosters (eSports)
 > **Branch `google-auth`**: Implementación de Autenticación con Google OAuth 2.0 y Tabla de Usuarios Registrados en MySQL.
 
-Esta es una práctica para la materia de Desarrollo de Aplicaciones Web (36309). Desarrollamos una API RESTful para la gestión de jugadores y armado de rosters en equipos de eSports, utilizando Node.js, Express, Sequelize ORM y MySQL.
+Esta es una práctica para la materia de Desarrollo de Aplicaciones Web. Desarrollamos una API RESTful para la gestión de jugadores y armado de rosters en equipos de eSports, utilizando Node.js, Express, Sequelize ORM y MySQL.
 
 ---
 
-## Novedades en Branch `google-auth` (Meta 4.1)
+## Ultima actualizacion en Branch `google-auth` (Meta 4.1)
 
 En esta entrega se implementan los siguientes requerimientos de la Unidad 4:
 1. **Autenticación con Google OAuth 2.0:**
