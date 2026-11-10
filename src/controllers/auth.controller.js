@@ -22,7 +22,29 @@ export const getOAuth2Client = () => {
 };
 
 /**
+ * GET /auth/login-token
+ * Genera un token CSRF de pre-login (Doble Cookie Pattern aplicado al login).
+ * El cliente DEBE solicitar este endpoint antes de hacer POST /auth/login,
+ * y enviar el token resultante en el header x-login-csrf.
+ */
+export const getPreLoginToken = (req, res) => {
+    const loginCsrfToken = generarTokenCSRF();
+    const isProd = process.env.NODE_ENV === 'production';
+
+    // Cookie NO httpOnly para que el JS del cliente pueda leerla y reenviarla como header
+    res.cookie('login_csrf_token', loginCsrfToken, {
+        httpOnly: false,
+        secure: isProd,
+        sameSite: 'strict',
+        maxAge: 300000  // 5 minutos de validez
+    });
+
+    return res.status(200).json({ loginCsrfToken });
+};
+
+/**
  * POST /api/v1/auth/login - Autenticación tradicional por credenciales
+ * Requiere: x-api-key + x-login-csrf (Doble Cookie Pattern en pre-login)
  */
 export const login = async (req, res) => {
     try {
@@ -35,6 +57,19 @@ export const login = async (req, res) => {
         if (!password || typeof password !== 'string' || password.trim() === '') {
             return res.status(400).json({ mensaje: 'La contraseña es requerida' });
         }
+
+        // ── PROTECCIÓN CSRF EN PRE-LOGIN (Doble Cookie Pattern) ──────────────
+        // Verificar que el header x-login-csrf coincida con la cookie login_csrf_token
+        const loginCsrfHeader = req.headers['x-login-csrf'];
+        const loginCsrfCookie = req.cookies?.login_csrf_token;
+        if (!loginCsrfHeader || !loginCsrfCookie || loginCsrfHeader !== loginCsrfCookie) {
+            return res.status(403).json({
+                mensaje: 'Token CSRF de pre-login inválido o ausente. Solicita un nuevo token en GET /auth/login-token'
+            });
+        }
+
+        // Invalidar el token de pre-login inmediatamente (uso de un solo uso)
+        res.clearCookie('login_csrf_token');
 
         const userEmail = email.trim().toLowerCase();
         const adminEmail = (process.env.ADMIN_EMAIL || 'admin@esports.com').toLowerCase();
@@ -95,14 +130,14 @@ export const login = async (req, res) => {
         res.cookie('jwt_token', tokenJWT, {
             httpOnly: true,
             secure: isProd,
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge
         });
 
         res.cookie('session_token', tokenJWT, {
             httpOnly: true,
             secure: isProd,
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge
         });
 
@@ -110,7 +145,7 @@ export const login = async (req, res) => {
         res.cookie('csrf_token', csrfToken, {
             httpOnly: false,
             secure: isProd,
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge
         });
 
@@ -261,14 +296,14 @@ export const googleCallback = async (req, res) => {
         res.cookie('jwt_token', tokenJWT, {
             httpOnly: true,
             secure: isProd,
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge
         });
 
         res.cookie('session_token', tokenJWT, {
             httpOnly: true,
             secure: isProd,
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge
         });
 
@@ -276,7 +311,7 @@ export const googleCallback = async (req, res) => {
         res.cookie('csrf_token', csrfToken, {
             httpOnly: false,
             secure: isProd,
-            sameSite: 'lax',
+            sameSite: 'strict',
             maxAge
         });
 
@@ -299,7 +334,7 @@ export const logout = (req, res) => {
         const cookieOpts = {
             httpOnly: true,
             secure: isProd,
-            sameSite: 'lax'
+            sameSite: 'strict'
         };
 
         res.clearCookie('jwt_token', cookieOpts);

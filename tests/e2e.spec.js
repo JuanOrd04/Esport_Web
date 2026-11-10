@@ -57,7 +57,22 @@ test.describe('1. Funcionalidades del Rol Público (Solo Lectura)', () => {
         await expect(page.locator('.btn-del-jugador')).toHaveCount(0);
     });
 
-    test('1.3 Debería permitir buscar jugadores por nickname reactivamente', async ({ page }) => {
+    test('1.3 Debería mostrar el detalle de un jugador desde su ficha pública', async ({ page }) => {
+        const playerCard = page.locator('.player-row-card').first();
+        const nickname = (await playerCard.locator('.player-nickname').innerText()).trim();
+
+        await playerCard.locator('.btn-detalle-jugador').click();
+
+        const modal = page.locator('#modal-detalle-jugador');
+        await expect(modal).toHaveClass(/active/);
+        await expect(page.locator('#detalle-jugador-nickname')).toHaveText(nickname);
+        await expect(page.locator('#detalle-jugador-id')).not.toBeEmpty();
+
+        await page.locator('#btn-cerrar-detalle-jugador-footer').click();
+        await expect(modal).not.toHaveClass(/active/);
+    });
+
+    test('1.4 Debería permitir buscar jugadores por nickname reactivamente', async ({ page }) => {
         const inputSearch = page.locator('#filtro-search');
         await inputSearch.fill('Faker');
         // Esperar el debounce de 300ms
@@ -74,7 +89,7 @@ test.describe('1. Funcionalidades del Rol Público (Solo Lectura)', () => {
         expect(countDespues).toBeGreaterThan(1);
     });
 
-    test('1.4 Debería permitir filtrar jugadores por Rol y por Estado', async ({ page }) => {
+    test('1.5 Debería permitir filtrar jugadores por Rol y por Estado', async ({ page }) => {
         const selectRol = page.locator('#filtro-rol');
         await selectRol.selectOption('Mid');
         await page.waitForTimeout(500);
@@ -101,7 +116,7 @@ test.describe('1. Funcionalidades del Rol Público (Solo Lectura)', () => {
         }
     });
 
-    test('1.5 Debería navegar a la sección de Rosters en modo público', async ({ page }) => {
+    test('1.6 Debería navegar a la sección de Rosters en modo público', async ({ page }) => {
         // Clic en pestaña de Rosters
         await page.locator('#tab-rosters-btn').click();
         await expect(page.locator('#section-rosters')).toBeVisible();
@@ -120,7 +135,7 @@ test.describe('1. Funcionalidades del Rol Público (Solo Lectura)', () => {
         await expect(page.locator('.btn-del-roster')).toHaveCount(0);
     });
 
-    test('1.6 Debería permitir filtrar rosters por Tipo y Temporada', async ({ page }) => {
+    test('1.7 Debería permitir filtrar rosters por Tipo y Temporada', async ({ page }) => {
         await page.locator('#tab-rosters-btn').click();
         await page.waitForTimeout(300);
 
@@ -145,7 +160,7 @@ test.describe('1. Funcionalidades del Rol Público (Solo Lectura)', () => {
         await page.waitForTimeout(500);
     });
 
-    test('1.7 Debería abrir el modal de detalle del roster en modo solo lectura', async ({ page }) => {
+    test('1.8 Debería abrir el modal de detalle del roster en modo solo lectura', async ({ page }) => {
         await page.locator('#tab-rosters-btn').click();
         await page.waitForTimeout(300);
 
@@ -249,10 +264,22 @@ test.describe('2. Autenticación Local y Seguridad (JWT + CSRF)', () => {
     });
 
     test('2.3 Debería validar que el backend rechaza peticiones protegidas sin header CSRF válido', async ({ request }) => {
-        // Primero obtener una sesión válida haciendo login directo vía API
+        // Obtener la configuración pública de la API Key y el token CSRF de pre-login
+        const configRes = await request.get('/api/config');
+        expect(configRes.ok()).toBeTruthy();
+        const { apiKey } = await configRes.json();
+
+        const preLoginRes = await request.get('/auth/login-token');
+        expect(preLoginRes.ok()).toBeTruthy();
+        const { loginCsrfToken } = await preLoginRes.json();
+
+        // Obtener una sesión válida haciendo login con el flujo actual (API Key + pre-login CSRF)
         const loginRes = await request.post('/api/v1/auth/login', {
             data: { email: 'admin@esports.com', password: 'admin123' },
-            headers: { 'x-api-key': 'esports_api_key_secret_2026' }
+            headers: {
+                'x-api-key': apiKey,
+                'x-login-csrf': loginCsrfToken
+            }
         });
         expect(loginRes.ok()).toBeTruthy();
         const loginData = await loginRes.json();
@@ -267,7 +294,7 @@ test.describe('2. Autenticación Local y Seguridad (JWT + CSRF)', () => {
                 estado: 'activo'
             },
             headers: {
-                'x-api-key': 'esports_api_key_secret_2026'
+                'x-api-key': apiKey
                 // Omitimos x-csrf-token
             }
         });
@@ -283,7 +310,7 @@ test.describe('2. Autenticación Local y Seguridad (JWT + CSRF)', () => {
                 estado: 'activo'
             },
             headers: {
-                'x-api-key': 'esports_api_key_secret_2026',
+                'x-api-key': apiKey,
                 'x-csrf-token': 'token_completamente_falso_y_malicioso_123'
             }
         });
