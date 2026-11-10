@@ -10,7 +10,7 @@ import auxiliaresRoutes from './routes/auxiliares.routes.js';
 import jugadoresRoutes from './routes/jugadores.routes.js';
 import rostersRoutes from './routes/rosters.routes.js';
 import authRoutes from './routes/auth.routes.js';
-import { login, googleLogin, googleCallback, logout, verificarAuth } from './controllers/auth.controller.js';
+import { login, googleLogin, googleCallback, logout, verificarAuth, getPreLoginToken } from './controllers/auth.controller.js';
 import { validarApiKey, verificarToken } from './middlewares/auth.middleware.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { AppError } from './utils/AppError.js';
@@ -31,7 +31,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Configuracion de CORS para transmision segura de Cookies y Headers personalizados
+// ========================================================
+// CORS: solo origenes explicitamente permitidos (FIX: no mas permisivo)
+// ========================================================
 const allowedOrigins = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
@@ -43,14 +45,16 @@ const allowedOrigins = [
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Permitir peticiones del mismo origen (navegador directo) o listas permitidas
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Permitir peticiones sin origen (Playwright, Postman, llamadas server-to-server)
+        if (!origin) return callback(null, true);
+        // Solo origenes de la lista blanca — rechazo explicito a todo lo demas
+        if (allowedOrigins.includes(origin)) {
             return callback(null, true);
         }
-        return callback(null, true); // Flexible para desarrollo
+        return callback(new Error(`Origen no permitido por CORS: ${origin}`), false);
     },
-    credentials: true, // Requerido para recibir y enviar cookies HTTP-Only
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-csrf-token', 'x-csrf'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key', 'x-csrf-token', 'x-csrf', 'x-login-csrf'],
     exposedHeaders: ['x-csrf-token', 'x-csrf']
 }));
 
@@ -71,12 +75,25 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/openapi.json', (req, res) => res.json(swaggerDocument));
 
 // ========================================================
-// Rutas de autenticación directa (Google OAuth y local)
+// Endpoint publico de configuracion del cliente
+// Expone la API Key de forma controlada (sin que figure en codigo fuente del frontend)
+// ========================================================
+app.get('/api/config', (req, res) => {
+    res.json({ apiKey: process.env.API_KEY || 'esports_api_key_secret_2026' });
+});
+
+// ========================================================
+// Rutas de autenticación (Google OAuth, login local, CSRF pre-login)
 // ========================================================
 app.get('/auth/google/login', googleLogin);
 app.get('/auth/google/callback', googleCallback);
 app.get('/api/auth/login', googleLogin);
 app.get('/api/auth/google/callback', googleCallback);
+
+// Pre-login CSRF: genera un token de un solo uso que el cliente debe enviar al hacer login
+app.get('/auth/login-token', getPreLoginToken);
+
+// Login local con validacion de API Key + pre-login CSRF
 app.post('/auth/login', validarApiKey, login);
 app.post('/auth/logout', logout);
 app.get('/auth/logout', logout);

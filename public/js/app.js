@@ -5,7 +5,8 @@ const state = {
     currentUser: null,
     jugadores: [],
     rosters: [],
-    rosterActual: null
+    rosterActual: null,
+    jugadorDetalle: null
 };
 
 // ==========================================
@@ -307,6 +308,9 @@ function renderJugadores() {
 
                 <!-- Columna 5: Botones de Acción Minimalistas -->
                 <div class="player-actions-col">
+                    <button class="action-btn btn-action-detail btn-detalle-jugador" title="Ver detalle del jugador" aria-label="Ver detalle de ${escapeHtml(j.nickname)}" data-id="${j.id}">
+                        Ver
+                    </button>
                     ${esAdmin ? `
                         <button class="action-btn btn-action-edit btn-edit-jugador" title="Editar invocador" data-id="${j.id}">
                             ${SVG_LAPIZ}
@@ -323,6 +327,10 @@ function renderJugadores() {
     }).join('');
 
     // Listeners de botones de accion
+    document.querySelectorAll('.btn-detalle-jugador').forEach(btn => {
+        btn.addEventListener('click', () => abrirDetalleJugador(btn.dataset.id));
+    });
+
     document.querySelectorAll('.btn-edit-jugador').forEach(btn => {
         btn.addEventListener('click', () => abrirEditarJugador(btn.dataset.id));
     });
@@ -330,6 +338,25 @@ function renderJugadores() {
     document.querySelectorAll('.btn-del-jugador').forEach(btn => {
         btn.addEventListener('click', () => eliminarJugador(btn.dataset.id, btn.dataset.nick));
     });
+}
+
+async function abrirDetalleJugador(id) {
+    try {
+        const jugador = await api.get(`/jugadores/${id}`);
+        state.jugadorDetalle = jugador;
+
+        document.getElementById('detalle-jugador-avatar').src = obtenerAvatarUrl(jugador.nickname);
+        document.getElementById('detalle-jugador-avatar').alt = `Avatar de ${jugador.nickname}`;
+        document.getElementById('detalle-jugador-nickname').textContent = jugador.nickname || 'Sin nickname';
+        document.getElementById('detalle-jugador-nombre').textContent = jugador.nombre_real || 'No especificado';
+        document.getElementById('detalle-jugador-pais').textContent = jugador.pais || 'No especificado';
+        document.getElementById('detalle-jugador-rol').textContent = jugador.rol || 'No especificado';
+        document.getElementById('detalle-jugador-estado').textContent = jugador.estado === 'activo' ? 'Activo' : 'Inactivo';
+        document.getElementById('detalle-jugador-id').textContent = jugador.id;
+        abrirModal('modal-detalle-jugador');
+    } catch (error) {
+        showToast(error.message || 'No se pudo cargar el detalle del jugador', 'error');
+    }
 }
 
 function abrirCrearJugador() {
@@ -617,6 +644,28 @@ async function asignarJugadorAlRoster() {
         return;
     }
 
+    // ── Validaciones en el cliente (RN-02 y RN-03) ───────────────────────────
+    if (rol_en_roster === 'Titular') {
+        const jugadoresActuales = state.rosterActual.jugadores || [];
+        const titularesActuales = jugadoresActuales.filter(j => j.rol_en_roster === 'Titular');
+
+        // RN-02: máximo 5 titulares por roster
+        if (titularesActuales.length >= 5) {
+            showToast('⚠️ No se puede agregar: el roster ya tiene 5 titulares (RN-02). Cambia el rol a Suplente.', 'error');
+            return;
+        }
+
+        // RN-03: no puede haber dos titulares con el mismo rol de juego
+        const jugadorSeleccionado = state.jugadores.find(j => j.id == id_jugador);
+        if (jugadorSeleccionado) {
+            const rolDuplicado = titularesActuales.some(t => t.rol === jugadorSeleccionado.rol);
+            if (rolDuplicado) {
+                showToast(`⚠️ Ya existe un Titular con rol "${jugadorSeleccionado.rol}" en este roster (RN-03).`, 'error');
+                return;
+            }
+        }
+    }
+
     try {
         await api.post(`/rosters/${state.rosterActual.id}/jugadores`, {
             id_jugador: Number(id_jugador),
@@ -634,6 +683,22 @@ async function asignarJugadorAlRoster() {
 }
 
 async function cambiarRolJugador(idJugador, nuevoRol) {
+    if (nuevoRol === 'Titular') {
+        const asignaciones = state.rosterActual?.jugadores || [];
+        const titulares = asignaciones.filter(j => j.rol_en_roster === 'Titular');
+
+        if (titulares.length >= 5) {
+            showToast('⚠️ No se puede promover: el roster ya tiene 5 titulares (RN-02).', 'error');
+            return;
+        }
+
+        const jugadorPromovido = asignaciones.find(j => String(j.id) === String(idJugador));
+        if (jugadorPromovido && titulares.some(j => j.rol === jugadorPromovido.rol)) {
+            showToast(`⚠️ Ya existe un Titular con rol "${jugadorPromovido.rol}" en este roster (RN-03).`, 'error');
+            return;
+        }
+    }
+
     try {
         await api.put(`/rosters/${state.rosterActual.id}/jugadores/${idJugador}`, {
             rol_en_roster: nuevoRol
@@ -685,7 +750,10 @@ function escapeHtml(text) {
 // ==========================================
 // EVENT LISTENERS & INICIALIZACION
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 0. Inicializar cliente API (carga API key desde servidor, sin hardcoding en frontend)
+    await api.init();
+
     // 1. Inicializar sesion
     inicializarSesion();
 
@@ -736,6 +804,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-cancel-roster').addEventListener('click', () => cerrarModal('modal-roster'));
 
     document.getElementById('btn-close-detalle').addEventListener('click', () => cerrarModal('modal-detalle-roster'));
+    document.getElementById('btn-close-detalle-jugador')?.addEventListener('click', () => cerrarModal('modal-detalle-jugador'));
+    document.getElementById('btn-cerrar-detalle-jugador-footer')?.addEventListener('click', () => cerrarModal('modal-detalle-jugador'));
     document.getElementById('btn-cerrar-detalle-footer').addEventListener('click', () => cerrarModal('modal-detalle-roster'));
 
     // 7. Envio de formularios
