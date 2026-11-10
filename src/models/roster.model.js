@@ -3,7 +3,7 @@ import sequelize from '../config/database.js';
 
 export const TIPOS_ROSTER_VALIDOS = ['Principal', 'Academy'];
 
-// Modelo Roster segun RF-07 y Modelo de Datos
+
 const Roster = sequelize.define('Roster', {
     id: {
         type: DataTypes.INTEGER,

@@ -4,7 +4,7 @@ import sequelize from '../config/database.js';
 export const ROLES_VALIDOS = ['Top', 'Jungle', 'Mid', 'ADC', 'Support'];
 export const ESTADOS_VALIDOS = ['activo', 'inactivo'];
 
-// Modelo Jugador segun la especificacion RF-01 y Modelo de Datos
+
 const Jugador = sequelize.define('Jugador', {
     id: {
         type: DataTypes.INTEGER,

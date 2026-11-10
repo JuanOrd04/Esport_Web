@@ -1,6 +1,6 @@
 import { api } from './api.js';
 
-// Estado global de la aplicacion
+
 const state = {
     currentUser: null,
     jugadores: [],
@@ -9,19 +9,15 @@ const state = {
     jugadorDetalle: null
 };
 
-// ==========================================
-// UTILIDADES: TOAST NOTIFICATIONS
-// ==========================================
+
+
+
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    
-    let icon = 'ℹ️';
-    if (type === 'success') icon = '✅';
-    if (type === 'error') icon = '❌';
 
-    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    toast.textContent = message;
     container.appendChild(toast);
 
     setTimeout(() => {
@@ -31,11 +27,11 @@ function showToast(message, type = 'info') {
     }, 4000);
 }
 
-// ==========================================
-// CONTROL DE AUTENTICACION Y SESION
-// ==========================================
+
+
+
 async function inicializarSesion() {
-    // 1. Detectar retorno de redirección de Google OAuth
+
     const urlParams = new URLSearchParams(window.location.search);
     const loginStatus = urlParams.get('login');
 
@@ -77,13 +73,13 @@ function actualizarVistaSegunRol() {
     if (esAdmin) {
         roleBadge.textContent = 'Admin';
         roleBadge.style.background = 'linear-gradient(135deg, #10b981, #06b6d4)';
-        statusText.innerHTML = `🛡️ Sesión Activa: <strong>${state.currentUser.email}</strong> (Rol Administrador)`;
+        statusText.innerHTML = `Sesión Activa: <strong>${state.currentUser.email}</strong> (Rol Administrador)`;
         statusSubtext.textContent = 'Tienes permisos completos para crear, editar y eliminar jugadores y gestionar rosters.';
         csrfIndicator.style.display = 'block';
 
-        const userAvatarHtml = state.currentUser.avatar 
-            ? `<img src="${escapeHtml(state.currentUser.avatar)}" alt="Avatar" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid #10b981;">` 
-            : '👤 ';
+        const userAvatarHtml = state.currentUser.avatar
+            ? `<img src="${escapeHtml(state.currentUser.avatar)}" alt="Avatar" style="width:26px;height:26px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:6px;border:1px solid #10b981;">`
+            : '';
         const displayName = state.currentUser.nombre || state.currentUser.email;
 
         authSection.innerHTML = `
@@ -101,12 +97,12 @@ function actualizarVistaSegunRol() {
     } else {
         roleBadge.textContent = 'Público';
         roleBadge.style.background = 'linear-gradient(135deg, var(--primary), var(--accent))';
-        statusText.innerHTML = 'ℹ️ Modo Público (Solo lectura)';
+        statusText.innerHTML = 'Modo Público (Solo lectura)';
         statusSubtext.textContent = 'Inicia sesión como Administrador para poder crear, editar y eliminar jugadores y armar rosters.';
         csrfIndicator.style.display = 'none';
 
         authSection.innerHTML = `
-            <button class="btn btn-primary btn-sm" id="btn-open-login">🔐 Iniciar Sesión Admin</button>
+            <button class="btn btn-primary btn-sm" id="btn-open-login">Iniciar Sesión Admin</button>
         `;
         document.getElementById('btn-open-login').addEventListener('click', () => abrirModal('modal-login'));
 
@@ -130,9 +126,9 @@ async function cerrarSesion() {
     }
 }
 
-// ==========================================
-// MODULO: JUGADORES
-// ==========================================
+
+
+
 async function cargarJugadores() {
     try {
         const params = new URLSearchParams();
@@ -152,33 +148,33 @@ async function cargarJugadores() {
     }
 }
 
-// ==========================================
-// HELPERS VISUALES LEAGUE OF LEGENDS / HEXTECH
-// ==========================================
+
+
+
 const BANDERAS_PAIS = {
-    'mexico': '🇲🇽', 'méxico': '🇲🇽', 'mx': '🇲🇽',
-    'corea': '🇰🇷', 'corea del sur': '🇰🇷', 'kr': '🇰🇷', 'korea': '🇰🇷', 'south korea': '🇰🇷',
-    'estados unidos': '🇺🇸', 'eeuu': '🇺🇸', 'usa': '🇺🇸', 'us': '🇺🇸',
-    'españa': '🇪🇸', 'espana': '🇪🇸', 'es': '🇪🇸', 'spain': '🇪🇸',
-    'canada': '🇨🇦', 'canadá': '🇨🇦', 'ca': '🇨🇦',
-    'argentina': '🇦🇷', 'ar': '🇦🇷',
-    'chile': '🇨🇱', 'cl': '🇨🇱',
-    'colombia': '🇨🇴', 'co': '🇨🇴',
-    'peru': '🇵🇪', 'perú': '🇵🇪', 'pe': '🇵🇪',
-    'brasil': '🇧🇷', 'brazil': '🇧🇷', 'br': '🇧🇷',
-    'china': '🇨🇳', 'cn': '🇨🇳',
-    'francia': '🇫🇷', 'france': '🇫🇷', 'fr': '🇫🇷',
-    'alemania': '🇩🇪', 'germany': '🇩🇪', 'de': '🇩🇪',
-    'dinamarca': '🇩🇰', 'denmark': '🇩🇰', 'dk': '🇩🇰',
-    'reino unido': '🇬🇧', 'uk': '🇬🇧', 'gb': '🇬🇧',
-    'suecia': '🇸🇪', 'sweden': '🇸🇪', 'se': '🇸🇪',
-    'japon': '🇯🇵', 'japón': '🇯🇵', 'jp': '🇯🇵', 'japan': '🇯🇵'
+    'mexico': 'mx', 'méxico': 'mx', 'mx': 'mx',
+    'corea': 'kr', 'corea del sur': 'kr', 'kr': 'kr', 'korea': 'kr', 'south korea': 'kr',
+    'estados unidos': 'us', 'eeuu': 'us', 'usa': 'us', 'us': 'us',
+    'españa': 'es', 'espana': 'es', 'es': 'es', 'spain': 'es',
+    'canada': 'ca', 'canadá': 'ca', 'ca': 'ca',
+    'argentina': 'ar', 'ar': 'ar',
+    'chile': 'cl', 'cl': 'cl',
+    'colombia': 'co', 'co': 'co',
+    'peru': 'pe', 'perú': 'pe', 'pe': 'pe',
+    'brasil': 'br', 'brazil': 'br', 'br': 'br',
+    'china': 'cn', 'cn': 'cn',
+    'francia': 'fr', 'france': 'fr', 'fr': 'fr',
+    'alemania': 'de', 'germany': 'de', 'de': 'de',
+    'dinamarca': 'dk', 'denmark': 'dk', 'dk': 'dk',
+    'reino unido': 'gb', 'uk': 'gb', 'gb': 'gb',
+    'suecia': 'se', 'sweden': 'se', 'se': 'se',
+    'japon': 'jp', 'japón': 'jp', 'jp': 'jp', 'japan': 'jp'
 };
 
 function obtenerBanderaPais(pais) {
-    if (!pais) return '🌐';
+    if (!pais) return null;
     const clave = pais.trim().toLowerCase();
-    return BANDERAS_PAIS[clave] || '🌐';
+    return BANDERAS_PAIS[clave] || null;
 }
 
 const ICONOS_ROLES = {
@@ -221,17 +217,17 @@ const SVG_BASURA = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" 
     <line x1="14" y1="11" x2="14" y2="17"></line>
 </svg>`;
 
-// ==========================================
-// FOTOS PERSONALIZADAS DE JUGADORES
-// Coloca aquí la URL de internet o la ruta local de la foto de cada jugador.
-// Ejemplo: 'faker': 'https://mi-servidor.com/faker.jpg' o 'faker': '/img/jugadores/faker.jpg'
-// ==========================================
+
+
+
+
+
 const FOTOS_PERSONALIZADAS = {
     'faker': 'https://e7.pngegg.com/pngimages/77/262/png-clipart-faker-league-of-legends-champions-korea-mid-season-invitational-sk-telecom-t1-mid-background-game-glasses.png',
     'impact': 'https://e7.pngegg.com/pngimages/105/294/png-clipart-impact-north-america-league-of-legends-championship-series-league-of-legends-world-championship-league-of-legends-face-team-liquid.png',
     'chovy': 'https://tse2.mm.bing.net/th/id/OIP.9WtapzXuYqTam4ifeJxyVQHaGA?r=0&rs=1&pid=ImgDetMain&o=7&rm=3',
     'zomb1x': ''
-    // Agrega aquí más jugadores: 'nickname': 'URL_O_RUTA_DE_LA_FOTO'
+
 };
 
 function obtenerAvatarUrl(nickname) {
@@ -239,7 +235,7 @@ function obtenerAvatarUrl(nickname) {
     if (FOTOS_PERSONALIZADAS[nick] && FOTOS_PERSONALIZADAS[nick].trim() !== '') {
         return FOTOS_PERSONALIZADAS[nick];
     }
-    // Si no tiene foto personalizada, genera un avatar con DiceBear
+
     const seed = encodeURIComponent(nickname || 'jugador');
     return `https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${seed}`;
 }
@@ -255,6 +251,7 @@ function renderJugadores() {
 
     container.innerHTML = state.jugadores.map(j => {
         const bandera = obtenerBanderaPais(j.pais);
+        const paisLabel = j.pais || 'País no especificado';
         const iconSvg = ICONOS_ROLES[j.rol] || '';
         const seed = encodeURIComponent(j.nickname || 'jugador');
         const avatarUrl = obtenerAvatarUrl(j.nickname);
@@ -262,13 +259,13 @@ function renderJugadores() {
 
         return `
             <div class="player-row-card">
-                <!-- Columna 1: Perfil con Avatar -->
+
                 <div class="player-profile-col">
                     <div class="player-avatar-wrapper">
-                        <img 
-                            src="${avatarUrl}" 
-                            alt="${escapeHtml(j.nickname)}" 
-                            class="player-avatar" 
+                        <img
+                            src="${avatarUrl}"
+                            alt="${escapeHtml(j.nickname)}"
+                            class="player-avatar"
                             loading="lazy"
                             onerror="this.onerror=null; this.src='${fallbackUrl}';"
                         />
@@ -284,13 +281,14 @@ function renderJugadores() {
                     </div>
                 </div>
 
-                <!-- Columna 2: País con Bandera -->
+
                 <div class="player-country-col">
-                    <span class="country-flag">${bandera}</span>
-                    <span class="country-name">${escapeHtml(j.pais || 'No especificado')}</span>
+                    ${bandera
+                        ? `<img class="country-flag-img" src="https://flagcdn.com/24x18/${bandera}.png" alt="Bandera de ${escapeHtml(paisLabel)}" title="${escapeHtml(paisLabel)}" width="24" height="18" loading="lazy">`
+                        : `<span class="country-flag country-flag-unknown" role="img" aria-label="Bandera no disponible para ${escapeHtml(paisLabel)}" title="${escapeHtml(paisLabel)}">—</span>`}
                 </div>
 
-                <!-- Columna 3: Rol con Ícono SVG -->
+
                 <div class="player-role-col">
                     <span class="role-badge role-${j.rol.toLowerCase()}">
                         ${iconSvg}
@@ -298,7 +296,7 @@ function renderJugadores() {
                     </span>
                 </div>
 
-                <!-- Columna 4: Estado con Dot Brillante -->
+
                 <div class="player-status-col">
                     <span class="status-pill status-${j.estado}">
                         <span class="status-dot"></span>
@@ -306,7 +304,7 @@ function renderJugadores() {
                     </span>
                 </div>
 
-                <!-- Columna 5: Botones de Acción Minimalistas -->
+
                 <div class="player-actions-col">
                     <button class="action-btn btn-action-detail btn-detalle-jugador" title="Ver detalle del jugador" aria-label="Ver detalle de ${escapeHtml(j.nickname)}" data-id="${j.id}">
                         Ver
@@ -326,7 +324,7 @@ function renderJugadores() {
         `;
     }).join('');
 
-    // Listeners de botones de accion
+
     document.querySelectorAll('.btn-detalle-jugador').forEach(btn => {
         btn.addEventListener('click', () => abrirDetalleJugador(btn.dataset.id));
     });
@@ -370,7 +368,7 @@ function abrirEditarJugador(id) {
     const jugador = state.jugadores.find(j => j.id == id);
     if (!jugador) return;
 
-    document.getElementById('modal-jugador-titulo').textContent = `✏️ Editar Jugador #${jugador.id} (${jugador.nickname})`;
+    document.getElementById('modal-jugador-titulo').textContent = `Editar Jugador #${jugador.id} (${jugador.nickname})`;
     document.getElementById('jugador-id').value = jugador.id;
     document.getElementById('jugador-nickname').value = jugador.nickname;
     document.getElementById('jugador-nombre').value = jugador.nombre_real || '';
@@ -421,9 +419,9 @@ async function eliminarJugador(id, nickname) {
     }
 }
 
-// ==========================================
-// MODULO: ROSTERS
-// ==========================================
+
+
+
 async function cargarRosters() {
     try {
         const params = new URLSearchParams();
@@ -457,21 +455,21 @@ function renderRosters() {
                     <span class="roster-title">${escapeHtml(r.nombre)}</span>
                     <span class="badge badge-${r.tipo.toLowerCase()}">${r.tipo}</span>
                 </div>
-                <div style="font-size: 0.85rem; color: var(--accent);">🎮 ${escapeHtml(r.juego)}</div>
-                
+                <div style="font-size: 0.85rem; color: var(--accent);">${escapeHtml(r.juego)}</div>
+
                 <div class="roster-stats">
-                    <span>📅 Temporada: <strong>${escapeHtml(r.temporada)}</strong></span>
-                    <span>👥 Jugadores: <strong>${r.cantidad_jugadores}</strong></span>
+                    <span>Temporada: <strong>${escapeHtml(r.temporada)}</strong></span>
+                    <span>Jugadores: <strong>${r.cantidad_jugadores}</strong></span>
                 </div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap;">
                 <button class="btn btn-primary btn-sm btn-ver-roster" data-id="${r.id}" style="flex: 1;">
-                    👥 Ver Roster
+                    Ver Roster
                 </button>
                 ${esAdmin ? `
-                    <button class="btn btn-secondary btn-sm btn-edit-roster" data-id="${r.id}">✏️</button>
-                    <button class="btn btn-danger btn-sm btn-del-roster" data-id="${r.id}" data-nombre="${escapeHtml(r.nombre)}">🗑️</button>
+                    <button class="btn btn-secondary btn-sm btn-edit-roster" data-id="${r.id}" title="Editar roster" aria-label="Editar roster ${escapeHtml(r.nombre)}">${SVG_LAPIZ}</button>
+                    <button class="btn btn-danger btn-sm btn-del-roster" data-id="${r.id}" data-nombre="${escapeHtml(r.nombre)}" title="Eliminar roster" aria-label="Eliminar roster ${escapeHtml(r.nombre)}">${SVG_BASURA}</button>
                 ` : ''}
             </div>
         </div>
@@ -502,7 +500,7 @@ function abrirEditarRoster(id) {
     const roster = state.rosters.find(r => r.id == id);
     if (!roster) return;
 
-    document.getElementById('modal-roster-titulo').textContent = `✏️ Editar Roster #${roster.id}`;
+    document.getElementById('modal-roster-titulo').textContent = `Editar Roster #${roster.id}`;
     document.getElementById('roster-id').value = roster.id;
     document.getElementById('roster-nombre').value = roster.nombre;
     document.getElementById('roster-juego').value = roster.juego;
@@ -551,18 +549,18 @@ async function eliminarRoster(id, nombre) {
     }
 }
 
-// ==========================================
-// MODULO: DETALLE DE ROSTER Y ASIGNACIONES
-// ==========================================
+
+
+
 async function abrirDetalleRoster(idRoster) {
     try {
         state.rosterActual = await api.get(`/rosters/${idRoster}`);
-        
-        document.getElementById('detalle-roster-nombre').textContent = `🛡️ ${state.rosterActual.nombre}`;
-        document.getElementById('detalle-roster-sub').textContent = 
+
+        document.getElementById('detalle-roster-nombre').textContent = state.rosterActual.nombre;
+        document.getElementById('detalle-roster-sub').textContent =
             `Juego: ${state.rosterActual.juego} | Tipo: ${state.rosterActual.tipo} | Temporada: ${state.rosterActual.temporada}`;
 
-        // Llenar dropdown de jugadores disponibles para asignar
+
         await llenarSelectJugadoresDisponibles();
         renderAsignaciones();
 
@@ -575,12 +573,12 @@ async function abrirDetalleRoster(idRoster) {
 async function llenarSelectJugadoresDisponibles() {
     const select = document.getElementById('select-asignar-jugador');
     const todosJugadores = await api.get('/jugadores');
-    
-    // IDs de los jugadores que ya estan en este roster
+
+
     const asignadosIds = new Set((state.rosterActual.jugadores || []).map(j => j.id));
     const disponibles = todosJugadores.filter(j => !asignadosIds.has(j.id) && j.estado === 'activo');
 
-    select.innerHTML = '<option value="">Selecciona un jugador...</option>' + 
+    select.innerHTML = '<option value="">Selecciona un jugador...</option>' +
         disponibles.map(j => `<option value="${j.id}">${escapeHtml(j.nickname)} (${j.rol})</option>`).join('');
 }
 
@@ -644,23 +642,23 @@ async function asignarJugadorAlRoster() {
         return;
     }
 
-    // ── Validaciones en el cliente (RN-02 y RN-03) ───────────────────────────
+
     if (rol_en_roster === 'Titular') {
         const jugadoresActuales = state.rosterActual.jugadores || [];
         const titularesActuales = jugadoresActuales.filter(j => j.rol_en_roster === 'Titular');
 
-        // RN-02: máximo 5 titulares por roster
+
         if (titularesActuales.length >= 5) {
-            showToast('⚠️ No se puede agregar: el roster ya tiene 5 titulares (RN-02). Cambia el rol a Suplente.', 'error');
+            showToast('No se puede agregar: el roster ya tiene 5 titulares (RN-02). Cambia el rol a Suplente.', 'error');
             return;
         }
 
-        // RN-03: no puede haber dos titulares con el mismo rol de juego
+
         const jugadorSeleccionado = state.jugadores.find(j => j.id == id_jugador);
         if (jugadorSeleccionado) {
             const rolDuplicado = titularesActuales.some(t => t.rol === jugadorSeleccionado.rol);
             if (rolDuplicado) {
-                showToast(`⚠️ Ya existe un Titular con rol "${jugadorSeleccionado.rol}" en este roster (RN-03).`, 'error');
+                showToast(`Ya existe un Titular con rol "${jugadorSeleccionado.rol}" en este roster (RN-03).`, 'error');
                 return;
             }
         }
@@ -673,11 +671,11 @@ async function asignarJugadorAlRoster() {
         });
 
         showToast('Jugador asignado correctamente', 'success');
-        // Recargar detalle
+
         await abrirDetalleRoster(state.rosterActual.id);
-        cargarRosters(); // Actualizar contador en la lista principal
+        cargarRosters();
     } catch (error) {
-        // Muestra error descriptivo de reglas de negocio (ej. 409 max 5 titulares o rol titular duplicado)
+
         showToast(error.message, 'error');
     }
 }
@@ -688,13 +686,13 @@ async function cambiarRolJugador(idJugador, nuevoRol) {
         const titulares = asignaciones.filter(j => j.rol_en_roster === 'Titular');
 
         if (titulares.length >= 5) {
-            showToast('⚠️ No se puede promover: el roster ya tiene 5 titulares (RN-02).', 'error');
+            showToast('No se puede promover: el roster ya tiene 5 titulares (RN-02).', 'error');
             return;
         }
 
         const jugadorPromovido = asignaciones.find(j => String(j.id) === String(idJugador));
         if (jugadorPromovido && titulares.some(j => j.rol === jugadorPromovido.rol)) {
-            showToast(`⚠️ Ya existe un Titular con rol "${jugadorPromovido.rol}" en este roster (RN-03).`, 'error');
+            showToast(`Ya existe un Titular con rol "${jugadorPromovido.rol}" en este roster (RN-03).`, 'error');
             return;
         }
     }
@@ -726,9 +724,9 @@ async function quitarJugadorDeRoster(idJugador, nickname) {
     }
 }
 
-// ==========================================
-// MODAL MANAGEMENT
-// ==========================================
+
+
+
 function abrirModal(idModal) {
     document.getElementById(idModal).classList.add('active');
 }
@@ -747,21 +745,21 @@ function escapeHtml(text) {
         .replace(/'/g, '&#039;');
 }
 
-// ==========================================
-// EVENT LISTENERS & INICIALIZACION
-// ==========================================
+
+
+
 document.addEventListener('DOMContentLoaded', async () => {
-    // 0. Inicializar cliente API (carga API key desde servidor, sin hardcoding en frontend)
+
     await api.init();
 
-    // 1. Inicializar sesion
+
     inicializarSesion();
 
-    // 2. Cargar datos iniciales
+
     cargarJugadores();
     cargarRosters();
 
-    // 3. Pestanas
+
     const tabJugadoresBtn = document.getElementById('tab-jugadores-btn');
     const tabRostersBtn = document.getElementById('tab-rosters-btn');
     const secJugadores = document.getElementById('section-jugadores');
@@ -781,7 +779,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         secJugadores.style.display = 'none';
     });
 
-    // 4. Filtros reactivos
+
     document.getElementById('filtro-search').addEventListener('input', debounce(cargarJugadores, 300));
     document.getElementById('filtro-rol').addEventListener('change', cargarJugadores);
     document.getElementById('filtro-estado').addEventListener('change', cargarJugadores);
@@ -789,11 +787,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('filtro-roster-tipo').addEventListener('change', cargarRosters);
     document.getElementById('filtro-roster-temporada').addEventListener('input', debounce(cargarRosters, 300));
 
-    // 5. Botones abrir modales
+
     document.getElementById('btn-nuevo-jugador').addEventListener('click', abrirCrearJugador);
     document.getElementById('btn-nuevo-roster').addEventListener('click', abrirCrearRoster);
 
-    // 6. Cerrar modales
+
     document.getElementById('btn-close-login').addEventListener('click', () => cerrarModal('modal-login'));
     document.getElementById('btn-cancel-login').addEventListener('click', () => cerrarModal('modal-login'));
 
@@ -808,12 +806,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('btn-cerrar-detalle-jugador-footer')?.addEventListener('click', () => cerrarModal('modal-detalle-jugador'));
     document.getElementById('btn-cerrar-detalle-footer').addEventListener('click', () => cerrarModal('modal-detalle-roster'));
 
-    // 7. Envio de formularios
+
     document.getElementById('form-jugador').addEventListener('submit', guardarJugador);
     document.getElementById('form-roster').addEventListener('submit', guardarRoster);
     document.getElementById('btn-confirmar-asignacion').addEventListener('click', asignarJugadorAlRoster);
 
-    // 8. Formulario de Login y Botón Google
+
     document.getElementById('btn-login-google')?.addEventListener('click', iniciarSesionGoogle);
 
     document.getElementById('form-login').addEventListener('submit', async (e) => {

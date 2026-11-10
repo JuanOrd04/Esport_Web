@@ -4,7 +4,7 @@ import Roster, { TIPOS_ROSTER_VALIDOS } from './roster.model.js';
 import RosterJugador, { ROLES_ROSTER_VALIDOS } from './rosterJugador.model.js';
 import Usuario, { ROLES_USUARIO } from './usuario.model.js';
 
-// Asociaciones N:M entre Roster y Jugador
+
 Roster.belongsToMany(Jugador, {
     through: RosterJugador,
     foreignKey: 'id_roster',
@@ -19,7 +19,7 @@ Jugador.belongsToMany(Roster, {
     as: 'rosters'
 });
 
-// Asociaciones 1:N con la tabla intermedia RosterJugador
+
 Roster.hasMany(RosterJugador, { foreignKey: 'id_roster', as: 'asignaciones' });
 RosterJugador.belongsTo(Roster, { foreignKey: 'id_roster', as: 'roster' });
 

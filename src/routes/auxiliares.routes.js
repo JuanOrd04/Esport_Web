@@ -8,7 +8,7 @@ import {
 
 const router = Router();
 
-// Endpoints auxiliares segun seccion 6.4
+
 router.get('/roles', obtenerRoles);
 router.get('/estados', obtenerEstados);
 router.get('/tipos-roster', obtenerTiposRoster);

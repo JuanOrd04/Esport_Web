@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 import 'dotenv/config';
 
-// Configuracion de Sequelize para conectarse a MySQL
+
 const sequelize = new Sequelize(
     process.env.DB_NAME || 'esports_db',
     process.env.DB_USER || 'backenduser',
@@ -10,11 +10,11 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST || '127.0.0.1',
         port: process.env.DB_PORT || 3306,
         dialect: 'mysql',
-        logging: false // No mostrar todos los logs de SQL en la terminal
+        logging: false
     }
 );
 
-// Funcion para probar la conexion
+
 export const testConnection = async () => {
     try {
         await sequelize.authenticate();

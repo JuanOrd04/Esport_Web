@@ -1,7 +1,7 @@
 import * as rostersService from '../services/rosters.service.js';
 import { AppError } from '../utils/AppError.js';
 
-// POST /api/v1/rosters - Crear roster (RF-07)
+
 export const crear = async (req, res, next) => {
     try {
         const nuevoRoster = await rostersService.crearRoster(req.body);
@@ -11,7 +11,7 @@ export const crear = async (req, res, next) => {
     }
 };
 
-// GET /api/v1/rosters - Listar todos los rosters (RF-08)
+
 export const listar = async (req, res, next) => {
     try {
         const { tipo, temporada } = req.query;
@@ -22,7 +22,7 @@ export const listar = async (req, res, next) => {
     }
 };
 
-// GET /api/v1/rosters/:id - Ver detalle del roster con sus jugadores (RF-09)
+
 export const obtenerPorId = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -38,7 +38,7 @@ export const obtenerPorId = async (req, res, next) => {
     }
 };
 
-// PUT /api/v1/rosters/:id - Actualizar datos del roster (RF-10)
+
 export const actualizar = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -54,7 +54,7 @@ export const actualizar = async (req, res, next) => {
     }
 };
 
-// DELETE /api/v1/rosters/:id - Eliminar un roster (RF-11)
+
 export const eliminar = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -70,7 +70,7 @@ export const eliminar = async (req, res, next) => {
     }
 };
 
-// GET /api/v1/rosters/:id/jugadores - Listar jugadores de un roster
+
 export const listarJugadores = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -86,7 +86,7 @@ export const listarJugadores = async (req, res, next) => {
     }
 };
 
-// POST /api/v1/rosters/:id/jugadores - Asignar jugador al roster (RF-12)
+
 export const asignarJugador = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -97,7 +97,7 @@ export const asignarJugador = async (req, res, next) => {
     }
 };
 
-// PUT /api/v1/rosters/:id/jugadores/:id_jugador - Cambiar rol dentro del roster (RF-12)
+
 export const cambiarRol = async (req, res, next) => {
     try {
         const { id, id_jugador } = req.params;
@@ -108,7 +108,7 @@ export const cambiarRol = async (req, res, next) => {
     }
 };
 
-// DELETE /api/v1/rosters/:id/jugadores/:id_jugador - Quitar jugador del roster (RF-13)
+
 export const quitarJugador = async (req, res, next) => {
     try {
         const { id, id_jugador } = req.params;

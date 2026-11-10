@@ -4,59 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>eSports Roster Manager - Panel Admin</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css?v=4">
 </head>
 <body>
 
-    <!-- NAVBAR -->
+
     <header class="navbar">
         <div class="brand">
-            <span>🎮</span>
-            <span>eSports Manager</span>
+            <img class="brand-logo" src="/images/lol-logo.png" alt="League of Legends">
+            <span>Roaster Manager</span>
             <span class="brand-badge" id="role-badge">Público</span>
         </div>
 
         <nav class="nav-links">
-            <button class="nav-btn active" id="tab-jugadores-btn">👤 Jugadores</button>
-            <button class="nav-btn" id="tab-rosters-btn">🛡️ Rosters</button>
-            <a href="/api-docs" target="_blank" class="nav-btn">📚 Swagger UI</a>
-            
+            <button class="nav-btn active" id="tab-jugadores-btn">Jugadores</button>
+            <button class="nav-btn" id="tab-rosters-btn">Rosters</button>
+            <a href="/api-docs" target="_blank" class="nav-btn">Swagger UI</a>
+
             <div id="auth-section">
-                <!-- Se actualiza dinamicamente con JS -->
-                <button class="btn btn-primary btn-sm" id="btn-open-login">🔐 Iniciar Sesión Admin</button>
+
+                <button class="btn btn-primary btn-sm" id="btn-open-login">Iniciar Sesión Admin</button>
             </div>
         </nav>
     </header>
 
-    <!-- MAIN CONTAINER -->
+
     <main class="main-container">
 
-        <!-- ALERTA DE MODO PUBLICO / ADMIN -->
+
         <div id="status-banner" class="panel" style="background: rgba(30, 41, 59, 0.5); padding: 1rem; border-left: 4px solid var(--accent); margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <strong id="status-text">ℹ️ Modo Público (Solo lectura)</strong>
+                <strong id="status-text">Modo Público (Solo lectura)</strong>
                 <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;" id="status-subtext">
                     Inicia sesión como Administrador para poder crear, editar y eliminar jugadores y armar rosters.
                 </p>
             </div>
             <div id="csrf-indicator" style="display: none;">
-                <span class="badge" style="background: #0284c7;">🛡️ Doble Cookie CSRF Activo</span>
+                <span class="badge" style="background: #0284c7;">Doble Cookie CSRF Activo</span>
             </div>
         </div>
 
-        <!-- ========================================== -->
-        <!-- SECCION 1: JUGADORES -->
-        <!-- ========================================== -->
+
+
+
         <section id="section-jugadores" class="panel">
             <div class="panel-header">
                 <div>
-                    <h2 class="panel-title">👥 Perfiles de Jugadores</h2>
+                    <h2 class="panel-title">Perfiles de Jugadores</h2>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">Listado general de jugadores registrados en el sistema</p>
                 </div>
                 <button class="btn btn-primary" id="btn-nuevo-jugador" style="display: none;">+ Nuevo Jugador</button>
             </div>
 
-            <!-- FILTROS -->
+
             <div class="filters-bar">
                 <div class="filter-item">
                     <label>Buscar por Nickname:</label>
@@ -83,7 +83,7 @@
                 </div>
             </div>
 
-            <!-- LISTADO DE JUGADORES (ROW CARDS) -->
+
             <div class="cards-header-row">
                 <div class="col-head">JUGADOR / INVOCADOR</div>
                 <div class="col-head">PAÍS</div>
@@ -100,19 +100,19 @@
         </section>
 
 
-        <!-- ========================================== -->
-        <!-- SECCION 2: ROSTERS -->
-        <!-- ========================================== -->
+
+
+
         <section id="section-rosters" class="panel" style="display: none;">
             <div class="panel-header">
                 <div>
-                    <h2 class="panel-title">🛡️ Rosters de Equipos</h2>
+                    <h2 class="panel-title">Rosters de Equipos</h2>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">Gestión de plantillas y alineaciones competitivas</p>
                 </div>
                 <button class="btn btn-primary" id="btn-nuevo-roster" style="display: none;">+ Nuevo Roster</button>
             </div>
 
-            <!-- FILTROS ROSTERS -->
+
             <div class="filters-bar">
                 <div class="filter-item">
                     <label>Tipo de Roster:</label>
@@ -128,21 +128,21 @@
                 </div>
             </div>
 
-            <!-- GRID DE ROSTERS -->
+
             <div class="rosters-grid" id="rosters-grid">
-                <!-- Se llena dinamicamente con JS -->
+
             </div>
         </section>
 
     </main>
 
-    <!-- ========================================== -->
-    <!-- MODAL: LOGIN ADMIN -->
-    <!-- ========================================== -->
+
+
+
     <div class="modal-overlay" id="modal-login">
         <div class="modal">
             <div class="modal-header">
-                <h3 style="font-size: 1.2rem;">🔐 Iniciar Sesión como Administrador</h3>
+                <h3 style="font-size: 1.2rem;">Iniciar Sesión como Administrador</h3>
                 <button class="btn btn-secondary btn-sm" id="btn-close-login">✕</button>
             </div>
             <form id="form-login">
@@ -180,9 +180,9 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL: CREAR / EDITAR JUGADOR -->
-    <!-- ========================================== -->
+
+
+
     <div class="modal-overlay" id="modal-jugador">
         <div class="modal">
             <div class="modal-header">
@@ -228,9 +228,9 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL: DETALLE DE JUGADOR -->
-    <!-- ========================================== -->
+
+
+
     <div class="modal-overlay" id="modal-detalle-jugador" role="dialog" aria-modal="true" aria-labelledby="detalle-jugador-nickname">
         <div class="modal" style="max-width: 560px;">
             <div class="modal-header">
@@ -259,9 +259,9 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL: CREAR / EDITAR ROSTER -->
-    <!-- ========================================== -->
+
+
+
     <div class="modal-overlay" id="modal-roster">
         <div class="modal">
             <div class="modal-header">
@@ -297,9 +297,9 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL: GESTION DE ROSTER Y JUGADORES ASIGNADOS -->
-    <!-- ========================================== -->
+
+
+
     <div class="modal-overlay" id="modal-detalle-roster">
         <div class="modal" style="max-width: 750px;">
             <div class="modal-header">
@@ -310,12 +310,12 @@
                 <button class="btn btn-secondary btn-sm" id="btn-close-detalle">✕</button>
             </div>
 
-            <!-- REGLAS DE NEGOCIO ALERTA -->
+
             <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border); padding: 0.75rem; border-radius: var(--radius); margin-bottom: 1.25rem; font-size: 0.8rem; color: var(--text-muted);">
-                ⚖️ <strong>Reglas de negocio activas:</strong> Máx 5 titulares (RN-02) • No repetir rol en titulares (RN-03) • Jugadores no se borran al quitar de roster (RN-05).
+                <strong>Reglas de negocio activas:</strong> Máx 5 titulares (RN-02) • No repetir rol en titulares (RN-03) • Jugadores no se borran al quitar de roster (RN-05).
             </div>
 
-            <!-- FORMULARIO ASIGNAR JUGADOR (SOLO ADMIN) -->
+
             <div id="form-asignar-container" style="background: rgba(99, 102, 241, 0.1); border: 1px dashed var(--primary); padding: 1rem; border-radius: var(--radius); margin-bottom: 1.5rem; display: none;">
                 <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--accent);">+ Asignar Jugador a este Roster</h4>
                 <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
@@ -336,7 +336,7 @@
                 </div>
             </div>
 
-            <!-- LISTA DE JUGADORES DEL ROSTER -->
+
             <h4 style="margin-bottom: 0.75rem; font-size: 1rem;">Jugadores Asignados (<span id="detalle-conteo-jugadores">0</span>)</h4>
             <div class="table-container">
                 <table>
@@ -349,7 +349,7 @@
                         </tr>
                     </thead>
                     <tbody id="tabla-asignaciones-body">
-                        <!-- Llenado con JS -->
+
                     </tbody>
                 </table>
             </div>
@@ -360,16 +360,16 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR DE TOAST NOTIFICATIONS -->
+
     <div class="toast-container" id="toast-container"></div>
 
-    <!-- FOOTER -->
+
     <footer>
         <p>eSports Rosters &copy; 2026 - Práctica de Desarrollo de Aplicaciones Web | UABC</p>
         <p style="margin-top: 0.25rem;">Autenticación JWT en Cookies HTTP-Only &middot; Doble Cookie CSRF &middot; API Key Header</p>
     </footer>
 
-    <!-- SCRIPTS -->
-    <script type="module" src="/js/app.js"></script>
+
+    <script type="module" src="/js/app.js?v=4"></script>
 </body>
 </html>

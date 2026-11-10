@@ -1,30 +1,30 @@
-/* ==========================================================================
-   eSports Manager - Tema League of Legends / Hextech UI
-   Paleta: Azul Medianoche, Dorado Hextech, Azul Neón y Vidrio Translúcido
-   ========================================================================== */
+
+
+
+
 
 :root {
-    /* Fondos y Superficies (Dark Midnight) */
+
     --bg-abyss: #010a13;
     --bg-canvas: #091428;
     --bg-card: rgba(10, 20, 40, 0.72);
     --bg-card-hover: rgba(14, 30, 60, 0.9);
     --bg-input: rgba(9, 20, 40, 0.85);
 
-    /* Acentos Hextech (Dorado) */
+
     --hex-gold-light: #f0e6d2;
     --hex-gold: #c8aa6e;
     --hex-gold-dark: #785a28;
     --hex-gold-border: rgba(200, 170, 110, 0.25);
 
-    /* Acentos de Magia Arcana (Azul Neón / Cian) */
+
     --hex-cyan: #0ac8b9;
     --hex-blue: #00cfe8;
     --hex-blue-dark: #005a82;
     --glow-cyan: rgba(10, 200, 185, 0.4);
     --glow-gold: rgba(200, 170, 110, 0.35);
 
-    /* Estados y Roles */
+
     --color-success: #2ed573;
     --color-danger: #ff4757;
     --color-warning: #ffa502;
@@ -34,7 +34,7 @@
     --color-adc: #ffa502;
     --color-support: #a29bfe;
 
-    /* Textos y Bordes */
+
     --text-primary: #f0e6d2;
     --text-secondary: #a09b8c;
     --text-muted: #5b5a56;
@@ -44,7 +44,7 @@
     --radius-lg: 14px;
 }
 
-/* RESET Y BASE */
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -62,7 +62,7 @@ body {
     overflow-x: hidden;
 }
 
-/* NAVBAR */
+
 .navbar {
     background: rgba(9, 20, 40, 0.85);
     backdrop-filter: blur(14px);
@@ -87,6 +87,13 @@ body {
     letter-spacing: 0.05em;
     color: var(--hex-gold-light);
     text-shadow: 0 0 10px var(--glow-gold);
+}
+
+.brand-logo {
+    display: block;
+    width: 48px;
+    height: 40px;
+    object-fit: contain;
 }
 
 .brand-badge {
@@ -142,7 +149,7 @@ body {
     color: var(--hex-gold-light);
 }
 
-/* CONTENEDOR PRINCIPAL */
+
 .main-container {
     max-width: 1220px;
     width: 100%;
@@ -151,7 +158,7 @@ body {
     flex: 1;
 }
 
-/* BANNER DE ESTADO */
+
 #status-banner {
     background: rgba(9, 20, 40, 0.65);
     backdrop-filter: blur(10px);
@@ -166,7 +173,7 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
 
-/* PANELES Y TARJETAS GLOBALES */
+
 .panel {
     background: transparent;
     margin-bottom: 2rem;
@@ -192,7 +199,7 @@ body {
     text-shadow: 0 0 8px rgba(200, 170, 110, 0.2);
 }
 
-/* BOTONES GLOBALES */
+
 .btn {
     display: inline-flex;
     align-items: center;
@@ -252,9 +259,9 @@ body {
     font-size: 0.8rem;
 }
 
-/* ==========================================================================
-   BUSCADOR Y FILTROS MODERNOS (HEXTECH GLOW)
-   ========================================================================== */
+
+
+
 .filters-bar {
     display: flex;
     gap: 1rem;
@@ -317,9 +324,9 @@ select option {
     color: var(--hex-gold-light);
 }
 
-/* ==========================================================================
-   LAYOUT DE LA TABLA (ROW CARDS HORIZONTALES)
-   ========================================================================== */
+
+
+
 .cards-header-row {
     display: grid;
     grid-template-columns: 2.4fr 1.3fr 1.3fr 1fr 100px;
@@ -340,7 +347,7 @@ select option {
     gap: 0.65rem;
 }
 
-/* Fila de Tarjeta Horizontal */
+
 .player-row-card {
     display: grid;
     grid-template-columns: 2.4fr 1.3fr 1.3fr 1fr 100px;
@@ -357,7 +364,7 @@ select option {
     overflow: hidden;
 }
 
-/* Borde indicador lateral en hover */
+
 .player-row-card::before {
     content: '';
     position: absolute;
@@ -380,7 +387,7 @@ select option {
     background: linear-gradient(180deg, var(--hex-cyan), var(--hex-gold));
 }
 
-/* 1. Columna: Perfil con Avatar */
+
 .player-profile-col {
     display: flex;
     align-items: center;
@@ -455,11 +462,11 @@ select option {
     text-overflow: ellipsis;
 }
 
-/* 2. Columna: País con Bandera */
+
 .player-country-col {
     display: flex;
     align-items: center;
-    gap: 0.45rem;
+    justify-content: center;
     font-size: 0.92rem;
     color: var(--text-primary);
 }
@@ -470,11 +477,21 @@ select option {
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
 }
 
-.country-name {
-    font-weight: 500;
+.country-flag-img {
+    display: block;
+    width: 24px;
+    height: 18px;
+    object-fit: cover;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
 }
 
-/* 3. Columna: Rol con Ícono SVG */
+.country-flag-unknown {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+
 .player-role-col {
     display: flex;
     align-items: center;
@@ -535,7 +552,7 @@ select option {
     box-shadow: 0 0 8px rgba(162, 155, 254, 0.15);
 }
 
-/* 4. Columna: Estado con Dot Brillante */
+
 .player-status-col {
     display: flex;
     align-items: center;
@@ -580,7 +597,7 @@ select option {
     background: var(--text-muted);
 }
 
-/* 5. Columna: Botones de Acción Minimalistas (SVG Íconos) */
+
 .player-actions-col {
     display: flex;
     align-items: center;
@@ -611,7 +628,7 @@ select option {
     transform: scale(1.12);
 }
 
-/* Lápiz: Se colorea en azul cian neón solo en hover */
+
 .btn-action-edit:hover {
     color: var(--hex-cyan);
     background: rgba(10, 200, 185, 0.15);
@@ -619,7 +636,7 @@ select option {
     box-shadow: 0 0 12px var(--glow-cyan);
 }
 
-/* Basura: Se colorea en rojo neón solo en hover */
+
 .btn-action-delete:hover {
     color: var(--color-danger);
     background: rgba(255, 71, 87, 0.15);
@@ -634,7 +651,7 @@ select option {
     text-transform: uppercase;
 }
 
-/* Estado de carga y vacío */
+
 .loading-state,
 .empty-state {
     text-align: center;
@@ -646,9 +663,9 @@ select option {
     font-size: 0.95rem;
 }
 
-/* ==========================================================================
-   SECCION DE ROSTERS
-   ========================================================================== */
+
+
+
 .rosters-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -723,7 +740,7 @@ select option {
     color: var(--hex-gold);
 }
 
-/* BADGES GENERALES */
+
 .badge {
     display: inline-block;
     padding: 0.25rem 0.65rem;
@@ -758,9 +775,9 @@ select option {
     border: 1px solid rgba(91, 90, 86, 0.3);
 }
 
-/* ==========================================================================
-   MODALES (HEXTECH DIALOGS)
-   ========================================================================== */
+
+
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -833,9 +850,9 @@ select option {
     padding-top: 1rem;
 }
 
-/* ==========================================================================
-   TOAST ALERTS
-   ========================================================================== */
+
+
+
 .toast-container {
     position: fixed;
     bottom: 1.5rem;
@@ -883,7 +900,7 @@ select option {
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* FOOTER */
+
 footer {
     text-align: center;
     padding: 1.75rem;
@@ -893,12 +910,12 @@ footer {
     background: var(--bg-abyss);
 }
 
-/* ==========================================================================
-   RESPONSIVIDAD (MOBILE & TABLET)
-   ========================================================================== */
+
+
+
 @media (max-width: 900px) {
     .cards-header-row {
-        display: none; /* Ocultar encabezados en pantallas medianas/chicas */
+        display: none;
     }
 
     .player-row-card {
@@ -914,9 +931,9 @@ footer {
     }
 }
 
-/* ==========================================================================
-   BOTON GOOGLE OAUTH
-   ========================================================================== */
+
+
+
 .btn-google {
     display: inline-flex;
     align-items: center;

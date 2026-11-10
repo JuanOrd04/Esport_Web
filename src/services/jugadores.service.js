@@ -1,23 +1,23 @@
 import { Op } from 'sequelize';
 import { Jugador, Roster, RosterJugador, ROLES_VALIDOS, ESTADOS_VALIDOS } from '../models/index.js';
 
-// Servicio con la logica de negocio para Jugadores
+
 export const crearJugador = async ({ nickname, nombre_real, pais, rol, estado }) => {
-    // Validacion: nickname obligatorio y no vacio
+
     if (!nickname || typeof nickname !== 'string' || nickname.trim() === '') {
         const error = new Error('El campo nickname es obligatorio y no puede estar vacío');
         error.status = 400;
         throw error;
     }
 
-    // Validacion: rol valido segun RF-01
+
     if (!rol || !ROLES_VALIDOS.includes(rol)) {
         const error = new Error(`Rol inválido. Debe ser uno de: ${ROLES_VALIDOS.join(', ')}`);
         error.status = 400;
         throw error;
     }
 
-    // Validacion: estado valido si se envia
+
     const estadoFinal = estado || 'activo';
     if (!ESTADOS_VALIDOS.includes(estadoFinal)) {
         const error = new Error(`Estado inválido. Debe ser uno de: ${ESTADOS_VALIDOS.join(', ')}`);
@@ -25,7 +25,7 @@ export const crearJugador = async ({ nickname, nombre_real, pais, rol, estado })
         throw error;
     }
 
-    // RN-01: El nickname debe ser unico
+
     const existente = await Jugador.findOne({
         where: { nickname: nickname.trim() }
     });
@@ -35,7 +35,7 @@ export const crearJugador = async ({ nickname, nombre_real, pais, rol, estado })
         throw error;
     }
 
-    // Guardar nuevo jugador
+
     const nuevoJugador = await Jugador.create({
         nickname: nickname.trim(),
         nombre_real: nombre_real ? nombre_real.trim() : null,
@@ -47,7 +47,7 @@ export const crearJugador = async ({ nickname, nombre_real, pais, rol, estado })
     return nuevoJugador;
 };
 
-// RF-02 y RF-06: Listar jugadores con filtros opcionales (rol, estado, search)
+
 export const listarJugadores = async ({ rol, estado, search }) => {
     const where = {};
 
@@ -73,41 +73,41 @@ export const listarJugadores = async ({ rol, estado, search }) => {
     return jugadores;
 };
 
-// RF-03: Obtener un jugador por su ID
+
 export const obtenerJugadorPorId = async (id) => {
     const jugador = await Jugador.findByPk(id);
     return jugador;
 };
 
-// RF-04: Actualizar un jugador con validaciones reforzadas
+
 export const actualizarJugador = async (id, datos) => {
     const jugador = await Jugador.findByPk(id);
     if (!jugador) {
         return null;
     }
 
-    // Validar nickname no vacio si viene en la peticion
+
     if (datos.nickname !== undefined && (typeof datos.nickname !== 'string' || datos.nickname.trim() === '')) {
         const error = new Error('El nickname no puede estar vacío');
         error.status = 400;
         throw error;
     }
 
-    // Si intenta cambiar el rol, validar catalogo
+
     if (datos.rol && !ROLES_VALIDOS.includes(datos.rol)) {
         const error = new Error(`Rol inválido. Debe ser uno de: ${ROLES_VALIDOS.join(', ')}`);
         error.status = 400;
         throw error;
     }
 
-    // Si intenta cambiar el estado, validar catalogo
+
     if (datos.estado && !ESTADOS_VALIDOS.includes(datos.estado)) {
         const error = new Error(`Estado inválido. Debe ser uno de: ${ESTADOS_VALIDOS.join(', ')}`);
         error.status = 400;
         throw error;
     }
 
-    // RN-01: Si cambia el nickname, checar que otro jugador no lo tenga
+
     if (datos.nickname !== undefined && datos.nickname.trim() !== jugador.nickname) {
         const existeOtro = await Jugador.findOne({
             where: {
@@ -122,7 +122,7 @@ export const actualizarJugador = async (id, datos) => {
         }
     }
 
-    // RN-03 Avanzada: Validar que el nuevo rol no cause conflicto en los rosters donde el jugador es Titular
+
     if (datos.rol && datos.rol !== jugador.rol) {
         const asignacionesTitular = await RosterJugador.findAll({
             where: { id_jugador: id, rol_en_roster: 'Titular' },
@@ -153,7 +153,7 @@ export const actualizarJugador = async (id, datos) => {
         }
     }
 
-    // Actualizar campos
+
     await jugador.update({
         nickname: datos.nickname !== undefined ? datos.nickname.trim() : jugador.nickname,
         nombre_real: datos.nombre_real !== undefined ? datos.nombre_real : jugador.nombre_real,
@@ -165,7 +165,7 @@ export const actualizarJugador = async (id, datos) => {
     return jugador;
 };
 
-// RF-05: Eliminar un jugador
+
 export const eliminarJugador = async (id) => {
     const jugador = await Jugador.findByPk(id);
     if (!jugador) {

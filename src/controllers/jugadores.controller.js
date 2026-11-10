@@ -1,7 +1,7 @@
 import * as jugadoresService from '../services/jugadores.service.js';
 import { AppError } from '../utils/AppError.js';
 
-// POST /api/v1/jugadores - Crear un nuevo jugador (RF-01)
+
 export const crear = async (req, res, next) => {
     try {
         const nuevoJugador = await jugadoresService.crearJugador(req.body);
@@ -11,7 +11,7 @@ export const crear = async (req, res, next) => {
     }
 };
 
-// GET /api/v1/jugadores - Listar jugadores con filtros opcionales (RF-02 y RF-06)
+
 export const listar = async (req, res, next) => {
     try {
         const { rol, estado, search } = req.query;
@@ -22,7 +22,7 @@ export const listar = async (req, res, next) => {
     }
 };
 
-// GET /api/v1/jugadores/:id - Detalle de un jugador (RF-03)
+
 export const obtenerPorId = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -38,7 +38,7 @@ export const obtenerPorId = async (req, res, next) => {
     }
 };
 
-// PUT /api/v1/jugadores/:id - Actualizar datos de un jugador (RF-04)
+
 export const actualizar = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -54,7 +54,7 @@ export const actualizar = async (req, res, next) => {
     }
 };
 
-// DELETE /api/v1/jugadores/:id - Eliminar un jugador (RF-05)
+
 export const eliminar = async (req, res, next) => {
     try {
         const { id } = req.params;

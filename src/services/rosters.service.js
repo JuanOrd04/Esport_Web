@@ -1,8 +1,8 @@
 import { Roster, Jugador, RosterJugador, TIPOS_ROSTER_VALIDOS, ROLES_ROSTER_VALIDOS } from '../models/index.js';
 
-// Servicio con la logica para Rosters y Asignacion de Jugadores
 
-// RF-07: Crear roster
+
+
 export const crearRoster = async ({ nombre, juego, tipo, temporada }) => {
     if (!nombre || typeof nombre !== 'string' || nombre.trim() === '') {
         const error = new Error('El campo nombre es obligatorio');
@@ -33,7 +33,7 @@ export const crearRoster = async ({ nombre, juego, tipo, temporada }) => {
     return nuevoRoster;
 };
 
-// RF-08: Listar rosters con cantidad de jugadores y filtros por tipo y temporada
+
 export const listarRosters = async ({ tipo, temporada }) => {
     const where = {};
     if (tipo) where.tipo = tipo;
@@ -48,7 +48,7 @@ export const listarRosters = async ({ tipo, temporada }) => {
         order: [['id', 'ASC']]
     });
 
-    // Devolvemos la lista incluyendo cantidad_jugadores como pide RF-08
+
     return rosters.map(r => ({
         id: r.id,
         nombre: r.nombre,
@@ -59,7 +59,7 @@ export const listarRosters = async ({ tipo, temporada }) => {
     }));
 };
 
-// RF-09: Ver detalle del roster con sus jugadores y roles (ejemplo de pagina 6)
+
 export const obtenerRosterPorId = async (id) => {
     const roster = await Roster.findByPk(id, {
         include: [{
@@ -74,7 +74,7 @@ export const obtenerRosterPorId = async (id) => {
 
     if (!roster) return null;
 
-    // Formatear jugadores segun la respuesta esperada
+
     const jugadoresFormateados = (roster.asignaciones || []).map(asig => ({
         id: asig.jugador.id,
         nickname: asig.jugador.nickname,
@@ -92,7 +92,7 @@ export const obtenerRosterPorId = async (id) => {
     };
 };
 
-// RF-10: Editar roster con validaciones reforzadas
+
 export const actualizarRoster = async (id, datos) => {
     const roster = await Roster.findByPk(id);
     if (!roster) return null;
@@ -125,7 +125,7 @@ export const actualizarRoster = async (id, datos) => {
     return roster;
 };
 
-// RF-11 y RN-05: Eliminar roster (los jugadores no se eliminan)
+
 export const eliminarRoster = async (id) => {
     const roster = await Roster.findByPk(id);
     if (!roster) return false;
@@ -134,7 +134,7 @@ export const eliminarRoster = async (id) => {
     return true;
 };
 
-// RF-12: Listar jugadores de un roster
+
 export const listarJugadoresDeRoster = async (idRoster) => {
     const roster = await Roster.findByPk(idRoster);
     if (!roster) return null;
@@ -152,9 +152,9 @@ export const listarJugadoresDeRoster = async (idRoster) => {
     }));
 };
 
-// RF-12: Asignar jugador a un roster con reglas RN-02, RN-03 y RN-04
+
 export const asignarJugadorARoster = async (idRoster, { id_jugador, rol_en_roster }) => {
-    // 1. Roster existente (404 si no existe)
+
     const roster = await Roster.findByPk(idRoster);
     if (!roster) {
         const error = new Error(`Roster con ID ${idRoster} no encontrado`);
@@ -162,7 +162,7 @@ export const asignarJugadorARoster = async (idRoster, { id_jugador, rol_en_roste
         throw error;
     }
 
-    // 2. Jugador existente (404 si no existe)
+
     if (!id_jugador) {
         const error = new Error('El campo id_jugador es obligatorio');
         error.status = 400;
@@ -175,14 +175,14 @@ export const asignarJugadorARoster = async (idRoster, { id_jugador, rol_en_roste
         throw error;
     }
 
-    // 3. Rol en roster valido (400 si no es Titular o Suplente)
+
     if (!rol_en_roster || !ROLES_ROSTER_VALIDOS.includes(rol_en_roster)) {
         const error = new Error(`Rol en roster inválido. Debe ser uno de: ${ROLES_ROSTER_VALIDOS.join(', ')}`);
         error.status = 400;
         throw error;
     }
 
-    // 4. Jugador ya asignado a este mismo roster (409 Conflict)
+
     const yaAsignado = await RosterJugador.findOne({
         where: { id_roster: idRoster, id_jugador: id_jugador }
     });
@@ -192,7 +192,7 @@ export const asignarJugadorARoster = async (idRoster, { id_jugador, rol_en_roste
         throw error;
     }
 
-    // 5. Validaciones para Titular
+
     if (rol_en_roster === 'Titular') {
         const asignacionesActuales = await RosterJugador.findAll({
             where: { id_roster: idRoster },
@@ -201,14 +201,14 @@ export const asignarJugadorARoster = async (idRoster, { id_jugador, rol_en_roste
 
         const titulares = asignacionesActuales.filter(a => a.rol_en_roster === 'Titular');
 
-        // RN-02: Maximo 5 titulares por roster (409 Conflict)
+
         if (titulares.length >= 5) {
             const error = new Error('El roster ya cuenta con el máximo de 5 titulares');
             error.status = 409;
             throw error;
         }
 
-        // RN-03: No puede haber dos titulares con el mismo rol (409 Conflict)
+
         const titularConMismoRol = titulares.find(a => a.jugador.rol === jugador.rol);
         if (titularConMismoRol) {
             const error = new Error(`Conflicto de rol: ya existe un titular con el rol "${jugador.rol}" (${titularConMismoRol.jugador.nickname})`);
@@ -217,7 +217,7 @@ export const asignarJugadorARoster = async (idRoster, { id_jugador, rol_en_roste
         }
     }
 
-    // Guardar asignacion
+
     const nuevaAsignacion = await RosterJugador.create({
         id_roster: Number(idRoster),
         id_jugador: Number(id_jugador),
@@ -232,7 +232,7 @@ export const asignarJugadorARoster = async (idRoster, { id_jugador, rol_en_roste
     };
 };
 
-// Cambiar rol dentro del roster (Titular/Suplente)
+
 export const cambiarRolEnRoster = async (idRoster, idJugador, { rol_en_roster }) => {
     const roster = await Roster.findByPk(idRoster);
     if (!roster) {
@@ -258,7 +258,7 @@ export const cambiarRolEnRoster = async (idRoster, idJugador, { rol_en_roster })
         throw error;
     }
 
-    // Si se pasa a Titular, validar limites
+
     if (rol_en_roster === 'Titular' && asignacion.rol_en_roster !== 'Titular') {
         const asignacionesActuales = await RosterJugador.findAll({
             where: { id_roster: idRoster },
@@ -267,14 +267,14 @@ export const cambiarRolEnRoster = async (idRoster, idJugador, { rol_en_roster })
 
         const titulares = asignacionesActuales.filter(a => a.rol_en_roster === 'Titular');
 
-        // RN-02: Maximo 5 titulares
+
         if (titulares.length >= 5) {
             const error = new Error('El roster ya cuenta con el máximo de 5 titulares');
             error.status = 409;
             throw error;
         }
 
-        // RN-03: No repetir rol titular
+
         const titularConMismoRol = titulares.find(a => a.jugador.rol === asignacion.jugador.rol);
         if (titularConMismoRol) {
             const error = new Error(`Conflicto de rol: ya existe un titular con el rol "${asignacion.jugador.rol}" (${titularConMismoRol.jugador.nickname})`);
@@ -293,11 +293,11 @@ export const cambiarRolEnRoster = async (idRoster, idJugador, { rol_en_roster })
     };
 };
 
-// RF-13: Quitar jugador del roster
+
 export const quitarJugadorDeRoster = async (idRoster, idJugador) => {
     const roster = await Roster.findByPk(idRoster);
     if (!roster) {
-        return null; // Roster no encontrado
+        return null;
     }
 
     const asignacion = await RosterJugador.findOne({
@@ -305,7 +305,7 @@ export const quitarJugadorDeRoster = async (idRoster, idJugador) => {
     });
 
     if (!asignacion) {
-        return false; // Asignacion no encontrada
+        return false;
     }
 
     await asignacion.destroy();

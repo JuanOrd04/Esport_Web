@@ -1,11 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Configuración de Playwright para pruebas E2E en eSports Roster Manager
- */
+
+
+
 export default defineConfig({
   testDir: './tests',
-  /* Ejecutar tests secuencialmente para mantener integridad de base de datos */
+
   fullyParallel: false,
   workers: 1,
   forbidOnly: !!process.env.CI,
@@ -30,7 +30,7 @@ export default defineConfig({
     }
   ],
 
-  /* Iniciar servidor local automáticamente antes de las pruebas si no está corriendo */
+
   webServer: {
     command: 'node server.js',
     url: 'http://localhost:3000/api/v1/health',

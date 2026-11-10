@@ -14,17 +14,17 @@ const __dirname = path.dirname(__filename);
 const PORT = process.env.PORT || 3000;
 const HTTPS_PORT = process.env.HTTPS_PORT || 5000;
 
-// Función para arrancar el servidor (HTTP y HTTPS opcional)
+
 const startServer = async () => {
     try {
-        // 1. Verificar conexión con MySQL
+
         await sequelize.authenticate();
         console.log('✅ Conexión establecida con MySQL.');
 
-        // 2. Asegurar que los usuarios iniciales autorizados existan en la tabla usuarios
+
         await asegurarUsuariosIniciales();
 
-        // 3. Iniciar Servidor HTTP principal
+
         const httpServer = http.createServer(app);
         httpServer.listen(PORT, () => {
             console.log(`🚀 Servidor eSports HTTP corriendo en:        http://localhost:${PORT}`);
@@ -34,7 +34,7 @@ const startServer = async () => {
             console.log(`📡 Endpoints base disponibles en:             http://localhost:${PORT}/api/v1`);
         });
 
-        // 4. Configurar Servidor HTTPS si los certificados SSL están presentes (Unidad 4)
+
         const certDir = path.join(__dirname, 'cert');
         const keyPath = fs.existsSync(path.join(certDir, 'key.pem'))
             ? path.join(certDir, 'key.pem')

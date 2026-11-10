@@ -4,11 +4,11 @@ import sequelize from '../config/database.js';
 export const ROLES_USUARIO = ['Admin', 'Usuario'];
 
 class Usuario extends Model {
-    /**
-     * Consulta si un usuario está registrado y autorizado en la base de datos
-     * @param {string} email Correo del usuario
-     * @returns {Promise<Usuario|null>}
-     */
+
+
+
+
+
     static async isUserAuthorized(email) {
         if (!email || typeof email !== 'string') return null;
         const usuario = await this.findOne({
@@ -20,11 +20,11 @@ class Usuario extends Model {
         return usuario;
     }
 
-    /**
-     * Registra o actualiza los datos de un usuario autenticado por Google
-     * @param {object} userInfo Datos de perfil retornados por Google OAuth
-     * @returns {Promise<Usuario>}
-     */
+
+
+
+
+
     static async registrarOActualizarGoogleUser(userInfo) {
         const email = userInfo.email.trim().toLowerCase();
         let usuario = await this.findOne({ where: { email } });
@@ -41,7 +41,7 @@ class Usuario extends Model {
                 email,
                 nombre: userInfo.name || email.split('@')[0],
                 avatar: userInfo.picture || null,
-                rol: 'Admin', // Por defecto los usuarios registrados en este proyecto son Admin
+                rol: 'Admin',
                 autorizado: true,
                 ultimo_acceso: new Date()
             });

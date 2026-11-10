@@ -3,7 +3,7 @@ import sequelize from '../config/database.js';
 
 export const ROLES_ROSTER_VALIDOS = ['Titular', 'Suplente'];
 
-// Modelo intermedio Roster_Jugador segun el modelo de datos y requerimientos RF-12 / RF-13
+
 const RosterJugador = sequelize.define('RosterJugador', {
     id: {
         type: DataTypes.INTEGER,
@@ -17,7 +17,7 @@ const RosterJugador = sequelize.define('RosterJugador', {
             model: 'rosters',
             key: 'id'
         },
-        onDelete: 'CASCADE' // RN-05: Si se elimina el roster, solo se borra la asignacion
+        onDelete: 'CASCADE'
     },
     id_jugador: {
         type: DataTypes.INTEGER,

@@ -1,8 +1,8 @@
 import { Usuario } from '../models/index.js';
 
-/**
- * Asegura la existencia de los usuarios iniciales autorizados en la base de datos
- */
+
+
+
 export const asegurarUsuariosIniciales = async () => {
     try {
         const adminEmailEnv = process.env.ADMIN_EMAIL || 'admin@esports.com';
@@ -28,7 +28,7 @@ export const asegurarUsuariosIniciales = async () => {
             }
         ];
 
-        // Si hay otro ADMIN_EMAIL en el .env agregarlo
+
         if (!usuariosBase.some(u => u.email.toLowerCase() === adminEmailEnv.toLowerCase())) {
             usuariosBase.push({
                 email: adminEmailEnv.toLowerCase(),
